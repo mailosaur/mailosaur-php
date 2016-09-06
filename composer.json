@@ -1,0 +1,37 @@
+{
+  "name": "mailosaurapp/mailosaur-php",
+  "description": "Mailosaur API client library",
+  "minimum-stability": "dev",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "Mailosaur\\": "src"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.0.*@dev",
+    "fzaninotto/faker": "1.6.x-dev",
+    "nette/utils" : "v2.3",
+    "nette/mail" : "v2.3.5"
+  },
+  "keywords": [
+    "email",
+    "testing",
+    "mailosaur",
+    "automation"
+  ],
+  "require": {
+    "php": ">=5.3.3"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Boris Yu",
+      "email": "admin@xdevel.info"
+    },
+    {
+      "name": "Mailosaur Ltd",
+      "email": "support@mailosaur.com"
+    }
+  ]
+}
