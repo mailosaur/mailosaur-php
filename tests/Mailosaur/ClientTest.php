@@ -63,7 +63,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->client->emptyMailBox();
 
         self::assertNotFalse($this->mailbox, 'mailbox is not set.');
-        self::assertNotFalse($this->apiUrl, 'api url is not set.');
         self::assertNotFalse($this->apiKey, 'api key is not set.');
         self::assertNotFalse($this->smtpHost, 'smtp host is not set.');
         self::assertNotFalse($this->password, 'smtp connection password is not set.');

@@ -40,9 +40,8 @@ class Client
         $this->mailbox = $mailbox;
         $this->key     = $key;
 
-        if ($apiUrl !== null) {
-            $this->apiUrl = $apiUrl;
-        }
+        $this->apiUrl = $apiUrl ?: $this->apiUrl;
+        
     }
 
     /**
