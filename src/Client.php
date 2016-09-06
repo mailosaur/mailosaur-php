@@ -204,7 +204,7 @@ class Client
         $requestState = curl_getinfo($curl);
 
         if ($requestState['http_code'] != 200 && $requestState['http_code'] != 204) {
-            throw new Exception('Bad request. Check your credentials.');
+            throw new Exception("Error making request to " . $this->apiUrl . $path . " Http status code: " . $requestState['http_code']);
         }
 
         return $response;
