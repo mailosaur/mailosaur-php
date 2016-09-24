@@ -29,12 +29,12 @@ class Email
     public $mailbox;
 
     /**
-     * @var Address[]
+     * @var EmailAddress[]
      */
     public $from = array();
 
     /**
-     * @var Address[]
+     * @var EmailAddress[]
      */
     public $to = array();
 
@@ -116,13 +116,13 @@ class Email
 
         if (property_exists($response, 'from') && is_array($response->from) && count($response->from) > 0) {
             foreach ($response->from as $from) {
-                $email->from[] = new Address($from);
+                $email->from[] = new EmailAddress($from);
             }
         }
 
         if (property_exists($response, 'to') && is_array($response->to) && count($response->to) > 0) {
             foreach ($response->to as $to) {
-                $email->to[] = new Address($to);
+                $email->to[] = new EmailAddress($to);
             }
         }
 

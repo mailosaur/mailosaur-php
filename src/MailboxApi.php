@@ -1,14 +1,15 @@
 <?php namespace Mailosaur;
 
+use Mailosaur\Exception\MailosaurException;
 use Mailosaur\Models\Email;
 
 /**
- * Class Client
+ * Class MailboxApi
  *
  * @package Mailosaur
  * @see     https://mailosaur.com/docs documentation
  */
-class Client
+class MailboxApi
 {
 
     /**
@@ -27,7 +28,7 @@ class Client
     protected $apiUrl = 'https://mailosaur.com/api';
 
     /**
-     * Client constructor.
+     * MailboxApi constructor.
      *
      * @param string $key     api key
      * @param string $mailbox mailbox
@@ -40,8 +41,9 @@ class Client
         $this->mailbox = $mailbox;
         $this->key     = $key;
 
-        $this->apiUrl = $apiUrl ?: $this->apiUrl;
-        
+        if ($apiUrl !== null) {
+            $this->apiUrl = $apiUrl;
+        }
     }
 
     /**
@@ -50,6 +52,7 @@ class Client
      * @param string $id email id
      *
      * @return \Mailosaur\Models\Email
+     * @throws \Mailosaur\Exception\MailosaurException
      */
     public function getEmail($id)
     {
@@ -60,18 +63,24 @@ class Client
     }
 
     /**
-     * <strong>List all email</strong><br/>
-     * Returns a list of emails in this mailbox.<br/>
+     * <strong>List all email</strong> (by default)<br/>
+     * <strong>List email by search pattern</strong><br/>
+     * Returns a list of emails in this mailbox filtered (or not) by search pattern.<br/>
      * The email returned is sorted by receipt date, with the most recent email appearing first.
      *
-     * @return Models\Email[]
-     * @throws \Mailosaur\Exception
+     * @param string $pattern fetch all email where the body or subject matches the search pattern provided, leave empty for return all emails
+     *
+     * @return \Mailosaur\Models\Email[]
      * @see     https://mailosaur.com/docs/email#list-email List all email documentation
      * @example https://mailosaur.com/docs/email#list-email
+     * @see     https://mailosaur.com/docs/email#list-email-search List email by search pattern documentation
+     * @example https://mailosaur.com/docs/email#list-email-search
      */
-    public function getEmails()
+    public function getEmails($pattern = '')
     {
-        $emails = $this->request('/mailboxes/' . $this->mailbox . '/emails');
+        $pattern = trim(filter_var($pattern, FILTER_SANITIZE_STRING));
+
+        $emails = $this->request('/mailboxes/' . $this->mailbox . '/emails' . (empty($pattern) ? '' : '?search=' . urlencode($pattern)));
         $emails = json_decode($emails);
 
         return $this->wrapEmails($emails);
@@ -85,7 +94,7 @@ class Client
      * @param string $recipient recipient email address
      *
      * @return Models\Email[]
-     * @throws \Mailosaur\Exception
+     * @throws \Mailosaur\Exception\MailosaurException
      * @see     https://mailosaur.com/docs/email#list-email-recipient List email by recipient documentation
      * @example https://mailosaur.com/docs/email#list-email-recipient
      */
@@ -98,31 +107,12 @@ class Client
     }
 
     /**
-     * <strong>List email by search pattern</strong><br/>
-     * These examples show you how to fetch all email where the body or subject matches the search pattern provided.
-     *
-     * @param string $pattern search pattern
-     *
-     * @return Models\Email[]
-     * @throws \Mailosaur\Exception
-     * @see     https://mailosaur.com/docs/email#list-email-search List email by search pattern documentation
-     * @example https://mailosaur.com/docs/email#list-email-search
-     */
-    public function getEmailsBySearchPattern($pattern)
-    {
-        $emails = $this->request('/mailboxes/' . $this->mailbox . '/emails?search=' . urlencode($pattern));
-        $emails = json_decode($emails);
-
-        return $this->wrapEmails($emails);
-    }
-
-    /**
      * Downloads an attachment.
      *
      * @param string $attachmentId attachment id
      *
      * @return string
-     * @throws \Mailosaur\Exception
+     * @throws \Mailosaur\Exception\MailosaurException
      * @see     https://mailosaur.com/docs/email#attachment Downloads an attachment documentation
      * @example https://mailosaur.com/docs/email#attachment
      */
@@ -137,11 +127,11 @@ class Client
      * @param string $id email id
      *
      * @return string
-     * @throws \Mailosaur\Exception
+     * @throws \Mailosaur\Exception\MailosaurException
      * @see     https://mailosaur.com/docs/email#eml Download EML documentation
      * @example https://mailosaur.com/docs/email#eml
      */
-    public function getEML($id)
+    public function getRawEmail($id)
     {
         return $this->request('/raw/' . urlencode($id));
     }
@@ -152,7 +142,7 @@ class Client
      * @param string $id email id
      *
      * @return void
-     * @throws \Mailosaur\Exception
+     * @throws \Mailosaur\Exception\MailosaurException
      * @see     https://mailosaur.com/docs/email#delete Delete an email documentation
      * @example https://mailosaur.com/docs/email#delete
      */
@@ -167,13 +157,23 @@ class Client
      * This cannot be undone.
      *
      * @return void
-     * @throws \Mailosaur\Exception
+     * @throws \Mailosaur\Exception\MailosaurException
      * @see     https://mailosaur.com/docs/email#empty Empty mailbox documentation
      * @example https://mailosaur.com/docs/email#empty
      */
-    public function emptyMailBox()
+    public function deleteAllEmail()
     {
         $this->request('/mailboxes/' . $this->mailbox . '/empty/', array(CURLOPT_CUSTOMREQUEST => 'POST'));
+    }
+
+    /**
+     * Generate random email address
+     *
+     * @return string
+     */
+    public function generateEmailAddress()
+    {
+        return mt_rand(0, 1000000) . '-' . mt_rand(2000000, 4000000) . '.' . $this->mailbox . '@mailosaur.io';
     }
 
     /**
@@ -183,7 +183,7 @@ class Client
      * @param array  $options additional curl options to set
      *
      * @return string
-     * @throws \Mailosaur\Exception
+     * @throws \Mailosaur\Exception\MailosaurException
      */
     protected function request($path, array $options = array())
     {
@@ -204,7 +204,7 @@ class Client
         $requestState = curl_getinfo($curl);
 
         if ($requestState['http_code'] != 200 && $requestState['http_code'] != 204) {
-            throw new Exception("Error making request to " . $this->apiUrl . $path . " Http status code: " . $requestState['http_code']);
+            throw new MailosaurException('Bad request . Check your credentials . ');
         }
 
         return $response;
@@ -215,9 +215,9 @@ class Client
      *
      * @param array $responseData
      *
-     * @return Email[]
+     * @return Email[]1
      */
-    public function wrapEmails(array $responseData)
+    protected function wrapEmails(array $responseData)
     {
         $emails = array();
 
@@ -226,15 +226,5 @@ class Client
         }
 
         return $emails;
-    }
-
-    /**
-     * Generate random email address
-     *
-     * @return string
-     */
-    public function generateEmailAddress()
-    {
-        return mt_rand(0, 1000000) . '-' . mt_rand(2000000, 4000000) . '.' . $this->mailbox . '@mailosaur.io';
     }
 }
