@@ -1,5 +1,5 @@
 {
-  "name": "mailosaur/mailosaur-php",
+  "name": "mailosaur/mailosaur",
   "description": "Mailosaur API client library",
   "minimum-stability": "dev",
   "type": "library",
