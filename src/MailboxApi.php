@@ -162,7 +162,7 @@ class MailboxApi
      */
     public function deleteAllEmail()
     {
-        $this->request('/mailboxes/' . $this->mailbox . '/empty/', array(CURLOPT_CUSTOMREQUEST => 'POST'));
+        $this->request('/messages?server=' . $this->mailbox, array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
     }
 
     /**
