@@ -1,28 +1,24 @@
-<?php namespace Mailosaur\Models;
+<?php
+
+namespace Mailosaur\Models;
 
 
 class Link
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $href;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $text;
 
-    public function __construct(\stdClass $link = null)
+    public function __construct(\stdClass $data)
     {
-        if ($link !== null) {
-            if (property_exists($link, 'href')) {
-                $this->href = $link->href;
-            }
+        if (property_exists($data, 'href')) {
+            $this->href = $data->href;
+        }
 
-            if (property_exists($link, 'text')) {
-                $this->text = $link->text;
-            }
+        if (property_exists($data, 'text')) {
+            $this->text = $data->text;
         }
     }
 }

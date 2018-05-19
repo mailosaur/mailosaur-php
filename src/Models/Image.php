@@ -1,28 +1,24 @@
-<?php namespace Mailosaur\Models;
+<?php
+
+namespace Mailosaur\Models;
 
 
 class Image
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $src;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $alt;
 
-    public function __construct(\stdClass $image = null)
+    public function __construct(\stdClass $data)
     {
-        if ($image !== null) {
-            if (property_exists($image, 'src')) {
-                $this->src = $image->src;
-            }
+        if (property_exists($data, 'src')) {
+            $this->src = $data->src;
+        }
 
-            if (property_exists($image, 'alt')) {
-                $this->alt = $image->alt;
-            }
+        if (property_exists($data, 'alt')) {
+            $this->alt = $data->alt;
         }
     }
 }
