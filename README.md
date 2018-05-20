@@ -29,7 +29,7 @@ Once you've cloned this repository locally, you can simply run:
 ```
 composer install
 
-export MAILOSAUR_MAILBOX_ID=yourmailbox
+export MAILOSAUR_SERVER=yourserverid
 export MAILOSAUR_API_KEY=yourapikey
 
 ./vendor/bin/phpunit

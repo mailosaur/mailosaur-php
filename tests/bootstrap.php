@@ -1,6 +1,5 @@
 <?php
-if( ! ini_get('date.timezone') )
-{
+if (!ini_get('date.timezone')) {
     date_default_timezone_set('GMT');
 }
-$loader = include __DIR__.'/../vendor/autoload.php';
+$loader = include __DIR__ . '/../vendor/autoload.php';

@@ -8,11 +8,15 @@
       "Mailosaur\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "MailosaurTest\\": "tests"
+    }
+  },
   "require-dev": {
-    "phpunit/phpunit": "4.0.*@dev",
-    "fzaninotto/faker": "1.6.0",
-    "nette/utils" : "v2.3",
-    "nette/mail" : "v2.3.5"
+    "phpunit/phpunit": "4.1.*@dev",
+    "nette/utils": "v2.3",
+    "nette/mail": "v2.3.5"
   },
   "keywords": [
     "email",

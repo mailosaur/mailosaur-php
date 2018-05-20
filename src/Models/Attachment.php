@@ -1,55 +1,59 @@
-<?php namespace Mailosaur\Models;
+<?php
+
+namespace Mailosaur\Models;
 
 
 class Attachment
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $contentType;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $fileName;
-    /**
-     * @var string
-     */
-    public $contentId = null;
 
-    /**
-     * @var int
-     */
+    /** @var string */
+    public $contentId;
+
+    /** @var int */
     public $length;
 
-    public function __construct(\stdClass $attachment = null)
+    /** @var \DateTime */
+    public $creationDate;
+
+    /** @var string */
+    public $url;
+
+    public function __construct(\stdClass $data)
     {
-        if ($attachment !== null) {
-            if (property_exists($attachment, 'id')) {
-                $this->id = $attachment->id;
-            }
+        if (property_exists($data, 'id')) {
+            $this->id = $data->id;
+        }
 
-            if (property_exists($attachment, 'contentType')) {
-                $this->contentType = $attachment->contentType;
-            }
+        if (property_exists($data, 'contentType')) {
+            $this->contentType = $data->contentType;
+        }
 
-            if (property_exists($attachment, 'fileName')) {
-                $this->fileName = $attachment->fileName;
-            }
+        if (property_exists($data, 'fileName')) {
+            $this->fileName = $data->fileName;
+        }
 
-            if (property_exists($attachment, 'length')) {
-                $this->length = (int)$attachment->length;
-            }
+        if (property_exists($data, 'contentId')) {
+            $this->contentId = $data->contentId;
+        }
 
-            if (property_exists($attachment, 'contentId')) {
-                $this->contentId = $attachment->contentId;
-            }
+        if (property_exists($data, 'length')) {
+            $this->length = $data->length;
+        }
+
+        if (property_exists($data, 'creationDate')) {
+            $this->creationDate = new \DateTime($data->creationDate);
+        }
+
+        if (property_exists($data, 'url')) {
+            $this->url = $data->url;
         }
     }
-
 }
