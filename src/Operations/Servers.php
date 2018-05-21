@@ -26,7 +26,7 @@ class Servers extends AOperation
      */
     public function all()
     {
-        $response = $this->request('/api/servers');
+        $response = $this->request('api/servers');
 
         $response = json_decode($response);
 
@@ -49,7 +49,7 @@ class Servers extends AOperation
         $payload = $serverCreateOptions->toJsonString();
 
         $response = $this->request(
-            '/api/servers/',
+            'api/servers/',
             array(
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS    => $payload,
@@ -74,7 +74,7 @@ class Servers extends AOperation
      */
     public function get($id)
     {
-        $response = $this->request('/api/servers/' . urlencode($id));
+        $response = $this->request('api/servers/' . urlencode($id));
 
         $response = json_decode($response);
 
@@ -98,7 +98,7 @@ class Servers extends AOperation
         $payload = $server->toJsonString();
 
         $response = $this->request(
-            '/api/servers/' . urlencode($id),
+            'api/servers/' . urlencode($id),
             array(
                 CURLOPT_CUSTOMREQUEST => 'PUT',
                 CURLOPT_POSTFIELDS    => $payload,
@@ -122,7 +122,7 @@ class Servers extends AOperation
      */
     public function delete($id)
     {
-        $this->request('/api/servers/' . urlencode($id), array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
+        $this->request('api/servers/' . urlencode($id), array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
     }
 
     public function generateEmailAddress($server)

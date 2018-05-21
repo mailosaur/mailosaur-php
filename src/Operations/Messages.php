@@ -22,7 +22,7 @@ class Messages extends AOperation
      */
     public function get($id)
     {
-        $message = $this->request('/api/messages/' . urlencode($id));
+        $message = $this->request('api/messages/' . urlencode($id));
         $message = json_decode($message);
 
         return new Message($message);
@@ -40,7 +40,7 @@ class Messages extends AOperation
      */
     public function delete($id)
     {
-        $this->request('/api/messages/' . urlencode($id), array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
+        $this->request('api/messages/' . urlencode($id), array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
     }
 
     /**
@@ -59,7 +59,7 @@ class Messages extends AOperation
     public function all($server, $page = 0, $itemsPerPage = 50)
     {
         $messagesResponse = $this->request(
-            '/api/messages/?server=' . urlencode($server)
+            'api/messages/?server=' . urlencode($server)
             . ($page > 0 ? '&page=' . urlencode($page) : '')
             . '&itemsPerPage=' . urlencode($itemsPerPage)
         );
@@ -80,7 +80,7 @@ class Messages extends AOperation
      */
     public function deleteAll($server)
     {
-        $this->request('/api/messages?server=' . urlencode($server), array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
+        $this->request('api/messages?server=' . urlencode($server), array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
     }
 
     /**
@@ -101,7 +101,7 @@ class Messages extends AOperation
     {
         $payload = $searchCriteria->toJsonString();
 
-        $path = '/api/messages/search?' . http_build_query(array('server' => $server, 'page' => $page, 'itemsPerPage' => $itemsPerPage));
+        $path = 'api/messages/search?' . http_build_query(array('server' => $server, 'page' => $page, 'itemsPerPage' => $itemsPerPage));
 
         $messagesResponse = $this->request(
             $path,
@@ -136,7 +136,7 @@ class Messages extends AOperation
         $payload = $searchCriteria->toJsonString();
 
         $message = $this->request(
-            '/api/messages/await?server=' . urlencode($server),
+            'api/messages/await?server=' . urlencode($server),
             array(
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS    => $payload,

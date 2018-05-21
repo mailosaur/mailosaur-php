@@ -25,7 +25,7 @@ class Analysis extends AOperation
      */
     public function spam($email)
     {
-        $response = $this->request('/api/analysis/spam/' . urlencode($email));
+        $response = $this->request('api/analysis/spam/' . urlencode($email));
 
         $response = json_decode($response);
 

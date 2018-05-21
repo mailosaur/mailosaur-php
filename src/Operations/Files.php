@@ -17,7 +17,7 @@ class Files extends AOperation
      */
     public function getAttachment($id)
     {
-        return $this->request('/api/files/attachments/' . urlencode($id));
+        return $this->request('api/files/attachments/' . urlencode($id));
     }
 
     /**
@@ -34,6 +34,6 @@ class Files extends AOperation
      */
     public function getEmail($id)
     {
-        return $this->request('/api/files/email/' . urlencode($id));
+        return $this->request('api/files/email/' . urlencode($id));
     }
 }
