@@ -9,7 +9,7 @@
 You can install the bindings via Composer. Run the following command:
 
 ```
-composer require mailosaurapp/mailosaur-php
+composer require mailosaur/mailosaur
 ```
 
 To use the client library, use Composer's autoload:
