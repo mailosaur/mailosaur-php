@@ -17,9 +17,6 @@ class Mailer
         for ($i = 0; $i < $quantity; $i++) {
             self::sendEmail($client, $server);
         }
-
-        // Wait to ensure email has arrived
-        sleep(2);
     }
 
     public static function sendEmail(MailosaurClient $client, $server, $sendToAddress = null)
