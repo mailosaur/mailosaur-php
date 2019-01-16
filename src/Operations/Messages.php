@@ -6,6 +6,7 @@ namespace Mailosaur\Operations;
 use Mailosaur\Models\Message;
 use Mailosaur\Models\MessageListResult;
 use Mailosaur\Models\SearchCriteria;
+use Mailosaur\Models\MailosaurException;
 
 class Messages extends AOperation
 {
@@ -120,32 +121,36 @@ class Messages extends AOperation
 
     /**
      * <strong>Wait for a specific message</strong>
-     * <p>Returns as soon as a message matching the specified search criteria is found.
+     * <p>Returns as soon as a message matching the specified search criteria is found or until timeout has elapsed.
      * This is the most efficient method of looking up a message.</p>
      *
      * @param string                           $server         The identifier of the server hosting the message.
-     * @param \Mailosaur\Models\SearchCriteria $searchCriteria Search criteria
+     * @param \Mailosaur\Models\SearchCriteria $searchCriteria Search criteria.
+     * @param int                              $timeout        Timeout in seconds (15s default).
      *
      * @return \Mailosaur\Models\Message
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_WaitFor Wait for a specific message docs
      * @example https://mailosaur.com/docs/api/#operation/Messages_WaitFor
      */
-    public function waitFor($server, SearchCriteria $searchCriteria)
+    public function waitFor($server, SearchCriteria $searchCriteria, $timeout=15)
     {
-        $payload = $searchCriteria->toJsonString();
+        $timeoutDatetime = new \DateTime('+'.$timeout.' seconds');
 
-        $message = $this->request(
-            'api/messages/await?server=' . urlencode($server),
-            array(
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS    => $payload,
-                CURLOPT_HTTPHEADER    => array('Content-Type:application/json', 'Content-Length: ' . strlen($payload))
-            )
+        while($timeoutDatetime > new \DateTime()) {
+            $messageList = $this->search($server, $searchCriteria);
+
+            if(sizeof($messageList->items) > 0) {
+                $message = $this->get($messageList->items[0]->id);
+                return $message;
+            }
+
+            sleep(2);
+        }
+
+        throw new MailosaurException(
+            '',
+            404
         );
-
-        $message = json_decode($message);
-
-        return new Message($message);
     }
 }

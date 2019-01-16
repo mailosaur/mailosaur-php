@@ -71,6 +71,17 @@ class EmailsTests extends \PHPUnit_Framework_TestCase
         $this->validateEmail($email);
     }
 
+    public function testWaitForTimeout()
+    {
+        $testEmailAddress = 'non_existing@email_address.com';
+
+        $criteria         = new SearchCriteria();
+        $criteria->sentTo = $testEmailAddress;
+
+        $this->setExpectedException('\Mailosaur\Models\MailosaurException');
+        $email = $this->client->messages->waitFor($this->server, $criteria, 5);
+    }
+
     public function testSearchNoCriteriaError()
     {
         $this->setExpectedException('\Mailosaur\Models\MailosaurException');
