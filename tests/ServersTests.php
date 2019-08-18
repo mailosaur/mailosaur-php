@@ -6,14 +6,14 @@ namespace Mailosaur_Test;
 use Mailosaur\MailosaurClient;
 use Mailosaur\Models\ServerCreateOptions;
 
-class ServersTests extends \PHPUnit_Framework_TestCase
+class ServersTests extends \PHPUnit\Framework\TestCase
 {
     /** @var \Mailosaur\MailosaurClient */
     public $mClient;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $baseUrl = ($h = getenv('MAILOSAUR_BASE_URL')) ? $h : 'https://mailosaur.com';
+        $baseUrl = ($h = getenv('MAILOSAUR_BASE_URL')) ? $h : 'https://mailosaur.com/';
         $apiKey  = getenv('MAILOSAUR_API_KEY');
 
         if (empty($apiKey)) {
@@ -32,7 +32,7 @@ class ServersTests extends \PHPUnit_Framework_TestCase
 
     public function testGetNotFound()
     {
-        $this->setExpectedException('\Mailosaur\Models\MailosaurException');
+        $this->expectException(\Mailosaur\Models\MailosaurException::class);
 
         $this->mClient->servers->get("efe907e9-74ed-4113-a3e0-a3d41d914765");
     }
@@ -75,7 +75,7 @@ class ServersTests extends \PHPUnit_Framework_TestCase
 
         $this->mClient->servers->delete($retrievedServer->id);
 
-        $this->setExpectedException('\Mailosaur\Models\MailosaurException');
+        $this->expectException(\Mailosaur\Models\MailosaurException::class);
         $this->mClient->servers->delete($retrievedServer->id);
     }
 
@@ -83,7 +83,8 @@ class ServersTests extends \PHPUnit_Framework_TestCase
     {
         $options = new ServerCreateOptions();
 
-        $this->setExpectedException('\Mailosaur\Models\MailosaurException', "Operation returned an invalid status code 'Bad Request'", 400);
+        $this->expectException(\Mailosaur\Models\MailosaurException::class);
+        $this->expectExceptionMessage("Operation returned an invalid status code 'Bad Request'");
 
         $this->mClient->servers->create($options);
     }
