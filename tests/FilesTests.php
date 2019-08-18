@@ -6,7 +6,7 @@ namespace MailosaurTest;
 use Mailosaur\MailosaurClient;
 use Mailosaur\Models\SearchCriteria;
 
-class FilesTests extends \PHPUnit_Framework_TestCase
+class FilesTests extends \PHPUnit\Framework\TestCase
 {
     /** @var \Mailosaur\MailosaurClient */
     public $client;
@@ -17,9 +17,9 @@ class FilesTests extends \PHPUnit_Framework_TestCase
     /** @var \Mailosaur\Models\Message */
     public $email;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $baseUrl      = ($h = getenv('MAILOSAUR_BASE_URL')) ? $h : 'https://mailosaur.com';
+        $baseUrl      = ($h = getenv('MAILOSAUR_BASE_URL')) ? $h : 'https://mailosaur.com/';
         $apiKey       = getenv('MAILOSAUR_API_KEY');
         $this->server = getenv('MAILOSAUR_SERVER');
 
@@ -48,7 +48,7 @@ class FilesTests extends \PHPUnit_Framework_TestCase
 
         $this->assertNotNull($result);
         $this->assertTrue(strlen($result) > 0);
-        $this->assertContains($this->email->subject, $result);
+        $this->assertStringContainsString($this->email->subject, $result);
     }
 
     public function testGetAttachment()

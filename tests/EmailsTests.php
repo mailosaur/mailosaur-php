@@ -8,7 +8,7 @@ use Mailosaur\Models\Message;
 use Mailosaur\Models\MessageSummary;
 use Mailosaur\Models\SearchCriteria;
 
-class EmailsTests extends \PHPUnit_Framework_TestCase
+class EmailsTests extends \PHPUnit\Framework\TestCase
 {
     /** @var \Mailosaur\MailosaurClient
      */
@@ -21,9 +21,9 @@ class EmailsTests extends \PHPUnit_Framework_TestCase
     public $emails;
 
 
-    public function setUp()
+    public function setUp(): void
     {
-        $baseUrl      = ($h = getenv('MAILOSAUR_BASE_URL')) ? $h : 'https://mailosaur.com';
+        $baseUrl      = ($h = getenv('MAILOSAUR_BASE_URL')) ? $h : 'https://mailosaur.com/';
         $apiKey       = getenv('MAILOSAUR_API_KEY');
         $this->server = getenv('MAILOSAUR_SERVER');
 
@@ -52,7 +52,7 @@ class EmailsTests extends \PHPUnit_Framework_TestCase
 
     public function testGetNotFound()
     {
-        $this->setExpectedException('\Mailosaur\Models\MailosaurException');
+        $this->expectException(\Mailosaur\Models\MailosaurException::class);
         $this->client->messages->get(uniqid());
     }
 
@@ -73,7 +73,7 @@ class EmailsTests extends \PHPUnit_Framework_TestCase
 
     public function testSearchNoCriteriaError()
     {
-        $this->setExpectedException('\Mailosaur\Models\MailosaurException');
+        $this->expectException(\Mailosaur\Models\MailosaurException::class);
         $this->client->messages->search($this->server, new SearchCriteria());
     }
 
@@ -94,7 +94,7 @@ class EmailsTests extends \PHPUnit_Framework_TestCase
 
     public function testSearchBySentToInvalidEmail()
     {
-        $this->setExpectedException('\Mailosaur\Models\MailosaurException');
+        $this->expectException(\Mailosaur\Models\MailosaurException::class);
 
         $criteria         = new SearchCriteria();
         $criteria->sentTo = '.not_an_email_address';
@@ -147,7 +147,7 @@ class EmailsTests extends \PHPUnit_Framework_TestCase
 
         $this->client->messages->delete($targetEmailId);
 
-        $this->setExpectedException('\Mailosaur\Models\MailosaurException');
+        $this->expectException(\Mailosaur\Models\MailosaurException::class);
 
         $this->client->messages->delete($targetEmailId);
     }
