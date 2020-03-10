@@ -2,7 +2,7 @@
 
 namespace Mailosaur\Operations;
 
-
+use Mailosaur\Models\MailosaurException;
 use Mailosaur\Models\Message;
 use Mailosaur\Models\MessageListResult;
 use Mailosaur\Models\SearchCriteria;
@@ -13,10 +13,10 @@ class Messages extends AOperation
      * <strong>Retrieves the detail for a single email message.</strong>
      * <p>Simply supply the unique identifier for the required message.</p>
      *
-     * @param $id message id
+     * @param $id string message id
      *
-     * @return \Mailosaur\Models\Message
-     * @throws \Mailosaur\Models\MailosaurException
+     * @return Message
+     * @throws MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_Get Retrieve a message docs
      * @example https://mailosaur.com/docs/api/#operation/Messages_Get
      */
@@ -32,9 +32,9 @@ class Messages extends AOperation
      * <strong>Permanently deletes a message.</strong>
      * <p>This operation cannot be undone. Also deletes any attachments related to the message.</p>
      *
-     * @param $id
+     * @param $id string
      *
-     * @throws \Mailosaur\Models\MailosaurException
+     * @throws MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_Delete Delete a message docs
      * @example https://mailosaur.com/docs/api/#operation/Messages_Delete
      */
@@ -51,8 +51,8 @@ class Messages extends AOperation
      * @param int    $itemsPerPage A limit on the number of results to be returned per page.
      *                             Can be set between 1 and 1000 items, the default is 50.
      *
-     * @return \Mailosaur\Models\MessageListResult
-     * @throws \Mailosaur\Models\MailosaurException
+     * @return MessageListResult
+     * @throws MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_List List all messages
      * @example https://mailosaur.com/docs/api/#operation/Messages_List
      */
@@ -74,7 +74,7 @@ class Messages extends AOperation
      *
      * @param string $server The identifier of the server to be emptied.
      *
-     * @throws \Mailosaur\Models\MailosaurException
+     * @throws MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_DeleteAll Delete all messages
      * @example https://mailosaur.com/docs/api/#operation/Messages_DeleteAll
      */
@@ -94,8 +94,8 @@ class Messages extends AOperation
      * @param int            $itemsPerPage   A limit on the number of results to be returned per page.
      *                                       Can be set between 1 and 1000 items, the default is 50.
      *
-     * @return \Mailosaur\Models\MessageListResult
-     * @throws \Mailosaur\Models\MailosaurException
+     * @return MessageListResult
+     * @throws MailosaurException
      */
     public function search($server, SearchCriteria $searchCriteria, $page = 0, $itemsPerPage = 50)
     {
@@ -124,10 +124,10 @@ class Messages extends AOperation
      * This is the most efficient method of looking up a message.</p>
      *
      * @param string                           $server         The identifier of the server hosting the message.
-     * @param \Mailosaur\Models\SearchCriteria $searchCriteria Search criteria
+     * @param SearchCriteria $searchCriteria Search criteria
      *
-     * @return \Mailosaur\Models\Message
-     * @throws \Mailosaur\Models\MailosaurException
+     * @return Message
+     * @throws MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_WaitFor Wait for a specific message docs
      * @example https://mailosaur.com/docs/api/#operation/Messages_WaitFor
      */
@@ -145,6 +145,10 @@ class Messages extends AOperation
         );
 
         $message = json_decode($message);
+
+        if (!$message) {
+            throw new MailosaurException('Email message not found.');
+        }
 
         return new Message($message);
     }
