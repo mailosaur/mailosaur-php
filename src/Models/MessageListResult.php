@@ -5,7 +5,7 @@ namespace Mailosaur\Models;
 
 class MessageListResult
 {
-    /** @var \Mailosaur\Models\MessageSummary[] */
+    /** @var array|MessageSummary[] */
     public $items = array();
 
     public function __construct(\stdClass $data = null)
