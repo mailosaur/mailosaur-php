@@ -29,6 +29,9 @@
     "ext-json": "*",
     "ext-curl": "*"
   },
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  },
   "license": "MIT",
   "authors": [
     {
