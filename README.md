@@ -32,7 +32,7 @@ composer install
 export MAILOSAUR_SERVER=yourserverid
 export MAILOSAUR_API_KEY=yourapikey
 
-./vendor/bin/phpunit
+composer run-script test
 ```
 
 ## Contacting us
