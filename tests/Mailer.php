@@ -17,6 +17,9 @@ class Mailer
         for ($i = 0; $i < $quantity; $i++) {
             self::sendEmail($client, $server);
         }
+
+        // Allow 2 seconds for any SMTP processing
+        sleep(2);
     }
 
     public static function sendEmail(MailosaurClient $client, $server, $sendToAddress = null)
