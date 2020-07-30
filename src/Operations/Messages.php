@@ -145,9 +145,9 @@ class Messages extends AOperation
         );
 
         $message = json_decode($message);
-
+        
         if (!$message) {
-            throw new MailosaurException('Email message not found.');
+            throw new \Exception('Email message not found.');
         }
 
         return new Message($message);

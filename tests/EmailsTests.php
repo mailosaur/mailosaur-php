@@ -2,7 +2,6 @@
 
 namespace MailosaurTest;
 
-
 use Mailosaur\MailosaurClient;
 use Mailosaur\Models\Message;
 use Mailosaur\Models\MessageSummary;
@@ -69,6 +68,22 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $email = $this->client->messages->waitFor($this->server, $criteria);
 
         $this->validateEmail($email);
+    }
+
+    public function testWaitForThrowsException()
+    {
+        $this->expectExceptionMessage('Email message not found.');
+
+        $host             = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.io';
+        $sendEmailAddress = 'found.' . $this->server . '@' . $host;
+        $testEmailAddress = 'not_found.' . $this->server . '@' . $host;
+
+        Mailer::sendEmail($this->client, $this->server, $sendEmailAddress);
+
+        $criteria         = new SearchCriteria();
+        $criteria->sentTo = $testEmailAddress;
+
+        $email = $this->client->messages->waitFor($this->server, $criteria);
     }
 
     public function testSearchNoCriteriaError()
