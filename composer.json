@@ -1,7 +1,6 @@
 {
-  "name": "mailosaur/mailosaur",
-  "description": "Mailosaur API client library",
-  "minimum-stability": "dev",
+  "name": "mailosaur/mailosaur-php",
+  "description": "The Mailosaur PHP library lets you integrate email and SMS testing into your continuous integration process.",
   "type": "library",
   "autoload": {
     "psr-4": {
@@ -19,9 +18,10 @@
     "nette/mail": "v3.1.0"
   },
   "keywords": [
-    "email",
-    "testing",
     "mailosaur",
+    "email",
+    "sms",
+    "testing",
     "automation"
   ],
   "require": {
@@ -35,7 +35,7 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Mailosaur Ltd",
+      "name": "Mailosaur",
       "email": "code@mailosaur.com"
     }
   ]
