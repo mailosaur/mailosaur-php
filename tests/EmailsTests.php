@@ -40,23 +40,18 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->emails = $this->client->messages->all($this->server)->items;
     }
 
+    public function testListWithReceivedAfter()
+    {
+        $pastDate = new \DateTime();
+        $pastDate->sub(new \DateInterval('PT10M'));
+        $pastEmails = $this->client->messages->all($this->server, null, null, $pastDate)->items;
+        $this->assertTrue(count($pastEmails) > 0);
+
+        $futureEmails = $this->client->messages->all($this->server, null, null, new \DateTime())->items;
+        $this->assertCount(0, $futureEmails);
+    }
+
     public function testGet()
-    {
-        $emailToRetrieve = $this->emails[0];
-
-        $email = $this->client->messages->get($emailToRetrieve->id);
-
-        $this->validateEmail($email);
-        $this->validateHeaders($email);
-    }
-
-    public function testGetNotFound()
-    {
-        $this->expectException(\Mailosaur\Models\MailosaurException::class);
-        $this->client->messages->get(uniqid());
-    }
-
-    public function testWaitFor()
     {
         $host             = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.io';
         $testEmailAddress = 'wait_for_test.' . $this->server . '@' . $host;
@@ -66,9 +61,25 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $criteria         = new SearchCriteria();
         $criteria->sentTo = $testEmailAddress;
 
-        $email = $this->client->messages->waitFor($this->server, $criteria);
+        $email = $this->client->messages->get($this->server, $criteria);
 
         $this->validateEmail($email);
+    }
+
+    public function testGetById()
+    {
+        $emailToRetrieve = $this->emails[0];
+
+        $email = $this->client->messages->getById($emailToRetrieve->id);
+
+        $this->validateEmail($email);
+        $this->validateHeaders($email);
+    }
+
+    public function testGetByIdNotFound()
+    {
+        $this->expectException(\Mailosaur\Models\MailosaurException::class);
+        $this->client->messages->getById(uniqid());
     }
 
     public function testSearchNoCriteriaError()
@@ -127,6 +138,16 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->assertCount(1, $results);
         $this->assertEquals($targetEmail->to[0]->email, $results[0]->to[0]->email);
         $this->assertEquals($targetEmail->subject, $results[0]->subject);
+    }
+
+    public function testSearchWithSpecialCharacters()
+    {
+        $criteria          = new SearchCriteria();
+        $criteria->subject = 'Search with ellipsis … and emoji 👨🏿‍🚒';
+
+        $results = $this->client->messages->search($this->server, $criteria)->items;
+
+        $this->assertCount(0, $results);
     }
 
     public function testSpamAnalysis()

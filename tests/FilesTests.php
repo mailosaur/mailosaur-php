@@ -39,7 +39,7 @@ class FilesTests extends \PHPUnit\Framework\TestCase
         $criteria         = new SearchCriteria();
         $criteria->sentTo = $testEmailAddress;
 
-        $this->email = $this->client->messages->waitFor($this->server, $criteria);
+        $this->email = $this->client->messages->get($this->server, $criteria);
     }
 
     public function testGetEmail()

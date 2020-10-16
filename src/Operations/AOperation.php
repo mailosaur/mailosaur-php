@@ -35,7 +35,7 @@ abstract class AOperation
             }
         }
 
-        curl_setopt($curl, CURLOPT_USERAGENT, 'mailosaur-php/5.0.0');
+        curl_setopt($curl, CURLOPT_USERAGENT, 'mailosaur-php/7.0.0');
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -45,10 +45,18 @@ abstract class AOperation
         $requestState = curl_getinfo($curl);
 
         if ($requestState['http_code'] != 200 && $requestState['http_code'] != 204) {
-            throw new MailosaurException(
-                $response,
-                $requestState['http_code']
-            );
+            switch ($requestState['http_code']) {
+                case 400:
+                    throw new MailosaurException('Request had one or more invalid parameters.', 'invalid_request', $requestState['http_code'], $response);
+                case 401:
+                    throw new MailosaurException('Authentication failed, check your API key.', 'authentication_error', $requestState['http_code'], $response);
+                case 403:
+                    throw new MailosaurException('Insufficient permission to perform that task.', 'permission_error', $requestState['http_code'], $response);
+                case 404:
+                    throw new MailosaurException('Request did not find any matching resources.', 'invalid_request', $requestState['http_code'], $response);
+                default:
+                    throw new MailosaurException('An API error occurred, see httpResponse for further information.', 'api_error', $requestState['http_code'], $response);
+            }
         }
 
         return $response;

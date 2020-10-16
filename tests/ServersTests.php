@@ -5,6 +5,7 @@ namespace Mailosaur_Test;
 
 use Mailosaur\MailosaurClient;
 use Mailosaur\Models\ServerCreateOptions;
+use Mailosaur\Models\MailosaurException;
 
 class ServersTests extends \PHPUnit\Framework\TestCase
 {
@@ -63,7 +64,7 @@ class ServersTests extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($retrievedServer->forwardingRules);
 
         // Update a server and confirm it has changed
-        $retrievedServer->name = $retrievedServer->name . ' EDITED';
+        $retrievedServer->name = $retrievedServer->name . ' updated with ellipsis … and emoji 👨🏿‍🚒';
 
         $updatedServer = $this->mClient->servers->update($retrievedServer->id, $retrievedServer);
         $this->assertEquals($retrievedServer->id, $updatedServer->id);
@@ -81,11 +82,14 @@ class ServersTests extends \PHPUnit\Framework\TestCase
 
     public function testFailedCreate()
     {
-        $options = new ServerCreateOptions();
-
-        $this->expectException(\Mailosaur\Models\MailosaurException::class);
-        $this->expectExceptionMessage("Operation returned an invalid status code 'Bad Request'");
-
-        $this->mClient->servers->create($options);
+        try {
+            $options = new ServerCreateOptions();
+            $this->mClient->servers->create($options);
+        } catch(MailosaurException $e) {
+            $this->assertEquals('Request had one or more invalid parameters.', $e->getMessage());
+            $this->assertEquals('invalid_request', $e->errorType);
+            $this->assertEquals(400, $e->httpStatusCode);
+            $this->assertEquals('{"type":"ValidationError","messages":{"name":"Please provide a name for your server"}}', $e->httpResponseBody);
+        }
     }
 }
