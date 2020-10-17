@@ -108,6 +108,10 @@ class MessageSummary
             $this->subject = $data->subject;
         }
 
+        if (property_exists($data, 'summary')) {
+            $this->summary = $data->summary;
+        }
+
         if (property_exists($data, 'attachments')) {
             $this->attachments = $data->attachments;
         }

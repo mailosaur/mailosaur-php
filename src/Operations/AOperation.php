@@ -35,7 +35,7 @@ abstract class AOperation
             }
         }
 
-        curl_setopt($curl, CURLOPT_USERAGENT, 'mailosaur-php/7.0.0');
+        curl_setopt($curl, CURLOPT_USERAGENT, 'mailosaur-php/7.0.1');
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);

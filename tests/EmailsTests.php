@@ -182,6 +182,7 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     private function validateEmailSummary(MessageSummary $email)
     {
+        $this->assertNotEmpty($email->summary);
         $this->assertEquals(2, $email->attachments);
 
         $email->received = $email->received->format(DATE_RFC2822);
