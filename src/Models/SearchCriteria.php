@@ -20,12 +20,20 @@ class SearchCriteria
      */
     public $body = null;
 
+    /**
+     * @var string If set to ALL (default), then only results that match all 
+     * specified criteria will be returned. If set to ANY, results that match any of the 
+     * specified criteria will be returned.
+     */
+    public $match = 'ALL';
+
     public function __toArray()
     {
         return array(
             'sentTo'  => $this->sentTo,
             'subject' => $this->subject,
             'body'    => $this->body,
+            'match'    => $this->match,
         );
     }
 

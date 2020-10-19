@@ -140,6 +140,32 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->assertEquals($targetEmail->subject, $results[0]->subject);
     }
 
+    public function testSearchMatchAll()
+    {
+        $targetEmail       = $this->emails[1];
+        $criteria          = new SearchCriteria();
+        $criteria->subject = substr($targetEmail->subject, 0, 10);
+        $criteria->body    = 'this is a link';
+        $criteria->match   = 'ALL';
+
+        $results = $this->client->messages->search($this->server, $criteria)->items;
+
+        $this->assertCount(1, $results);
+    }
+
+    public function testSearchMatchAny()
+    {
+        $targetEmail       = $this->emails[1];
+        $criteria          = new SearchCriteria();
+        $criteria->subject = substr($targetEmail->subject, 0, 10);
+        $criteria->body    = 'this is a link';
+        $criteria->match   = 'ANY';
+
+        $results = $this->client->messages->search($this->server, $criteria)->items;
+
+        $this->assertCount(5, $results);
+    }
+
     public function testSearchWithSpecialCharacters()
     {
         $criteria          = new SearchCriteria();
