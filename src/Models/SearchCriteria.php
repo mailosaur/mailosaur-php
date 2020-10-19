@@ -6,6 +6,11 @@ namespace Mailosaur\Models;
 class SearchCriteria
 {
     /**
+     * @var string The full email address from which the target email was sent.
+     */
+    public $sentFrom = null;
+
+    /**
      * @var string The full email address to which the target email was sent.
      */
     public $sentTo = null;
@@ -30,6 +35,7 @@ class SearchCriteria
     public function __toArray()
     {
         return array(
+            'sentFrom'  => $this->sentFrom,
             'sentTo'  => $this->sentTo,
             'subject' => $this->subject,
             'body'    => $this->body,

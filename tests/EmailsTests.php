@@ -88,6 +88,31 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->client->messages->search($this->server, new SearchCriteria());
     }
 
+    public function testSearchBySentFrom()
+    {
+        $targetEmail = $this->emails[1];
+
+        $criteria = new SearchCriteria();
+
+        $criteria->sentFrom = $targetEmail->from[0]->email;
+
+        $results = $this->client->messages->search($this->server, $criteria)->items;
+
+        $this->assertCount(1, $results);
+        $this->assertEquals($targetEmail->from[0]->email, $results[0]->from[0]->email);
+        $this->assertEquals($targetEmail->subject, $results[0]->subject);
+    }
+
+    public function testSearchBySentFromInvalidEmail()
+    {
+        $this->expectException(\Mailosaur\Models\MailosaurException::class);
+
+        $criteria         = new SearchCriteria();
+        $criteria->sentFrom = '.not_an_email_address';
+
+        $this->client->messages->search($this->server, $criteria);
+    }
+
     public function testSearchBySentTo()
     {
         $targetEmail = $this->emails[1];
