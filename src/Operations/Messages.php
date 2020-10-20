@@ -179,7 +179,9 @@ class Messages extends AOperation
                 return $result;
             }
 
-            $delayPattern = array_map('intval', explode(',', $headers['x-ms-delay'][0] ?: '1000'));
+            $delayPattern = isset($headers['x-ms-delay']) ?
+                array_map('intval', explode(',', $headers['x-ms-delay'][0] ?: '1000'))
+                : array(1000);
 
             $delay = $pollCount >= count($delayPattern) ?
                 $delayPattern[count($delayPattern) - 1] :
