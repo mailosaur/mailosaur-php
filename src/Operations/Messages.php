@@ -129,11 +129,13 @@ class Messages extends AOperation
      *                                       Can be set between 1 and 1000 items, the default is 50.
      * @param int            $timeout        Specify how long to wait for a matching result (in milliseconds).
      * @param \DateTime      $receivedAfter  Limits results to only messages received after this date/time.
+     * @param bool           $errorOnTimeout When set to false, an error will not be throw if timeout is reached
+     *                                       (default: true).
      *
      * @return MessageListResult
      * @throws MailosaurException
      */
-    public function search($server, SearchCriteria $searchCriteria, $page = 0, $itemsPerPage = 50, $timeout = null, \DateTime $receivedAfter = null)
+    public function search($server, SearchCriteria $searchCriteria, $page = 0, $itemsPerPage = 50, $timeout = null, \DateTime $receivedAfter = null, $errorOnTimeout = true)
     {
         $payload = $searchCriteria->toJsonString();
 
@@ -187,6 +189,10 @@ class Messages extends AOperation
 
             // Stop if timeout will be exceeded
             if ((round(microtime(true) * 1000) - $startTime) + $delay > $timeout) {
+                if ($errorOnTimeout == false) {
+                    return $result;
+                }
+
                 throw new MailosaurException("No matching messages found in time. By default, only messages received in the last hour are checked (use receivedAfter to override this).", "search_timeout");
             }
 

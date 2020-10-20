@@ -88,6 +88,14 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->client->messages->search($this->server, new SearchCriteria());
     }
 
+    public function testSearchTimeoutErrorsSuppressed()
+    {
+        $criteria = new SearchCriteria();
+        $criteria->sentFrom = 'neverfound@example.com';
+        $results = $this->client->messages->search($this->server, $criteria, 0, 1, 1, new \DateTime(), false)->items;
+        $this->assertCount(0, $results);
+    }
+
     public function testSearchBySentFrom()
     {
         $targetEmail = $this->emails[1];
