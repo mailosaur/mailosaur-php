@@ -10,9 +10,9 @@ use Mailosaur\Models\MailosaurException;
 class ServersTests extends \PHPUnit\Framework\TestCase
 {
     /** @var \Mailosaur\MailosaurClient */
-    public $mClient;
+    protected static $client;
 
-    public function setUp(): void
+    public static function setUpBeforeClass(): void
     {
         $baseUrl = ($h = getenv('MAILOSAUR_BASE_URL')) ? $h : 'https://mailosaur.com/';
         $apiKey  = getenv('MAILOSAUR_API_KEY');
@@ -21,12 +21,12 @@ class ServersTests extends \PHPUnit\Framework\TestCase
             throw new \Exception('Missing necessary environment variables - refer to README.md');
         }
 
-        $this->mClient = new MailosaurClient($apiKey, $baseUrl);
+        self::$client = new MailosaurClient($apiKey, $baseUrl);
     }
 
     public function testAll()
     {
-        $servers = $this->mClient->servers->all()->items;
+        $servers = self::$client->servers->all()->items;
 
         $this->assertTrue(count($servers) > 1);
     }
@@ -35,7 +35,7 @@ class ServersTests extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\Mailosaur\Models\MailosaurException::class);
 
-        $this->mClient->servers->get("efe907e9-74ed-4113-a3e0-a3d41d914765");
+        self::$client->servers->get("efe907e9-74ed-4113-a3e0-a3d41d914765");
     }
 
     public function testCrud()
@@ -44,7 +44,7 @@ class ServersTests extends \PHPUnit\Framework\TestCase
 
         // Create a new server
         $options       = new ServerCreateOptions($serverName);
-        $createdServer = $this->mClient->servers->create($options);
+        $createdServer = self::$client->servers->create($options);
 
         $this->assertFalse(empty($createdServer->id));
         $this->assertEquals($serverName, $createdServer->name);
@@ -54,7 +54,7 @@ class ServersTests extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($createdServer->forwardingRules);
 
         // Retrieve a server and confirm it has expected content
-        $retrievedServer = $this->mClient->servers->get($createdServer->id);
+        $retrievedServer = self::$client->servers->get($createdServer->id);
 
         $this->assertEquals($createdServer->id, $retrievedServer->id);
         $this->assertEquals($createdServer->name, $retrievedServer->name);
@@ -66,7 +66,7 @@ class ServersTests extends \PHPUnit\Framework\TestCase
         // Update a server and confirm it has changed
         $retrievedServer->name = $retrievedServer->name . ' updated with ellipsis … and emoji 👨🏿‍🚒';
 
-        $updatedServer = $this->mClient->servers->update($retrievedServer->id, $retrievedServer);
+        $updatedServer = self::$client->servers->update($retrievedServer->id, $retrievedServer);
         $this->assertEquals($retrievedServer->id, $updatedServer->id);
         $this->assertEquals($retrievedServer->name, $updatedServer->name);
         $this->assertEquals($retrievedServer->password, $updatedServer->password);
@@ -74,17 +74,17 @@ class ServersTests extends \PHPUnit\Framework\TestCase
         $this->assertEquals($retrievedServer->messages, $updatedServer->messages);
         $this->assertEquals($retrievedServer->forwardingRules, $updatedServer->forwardingRules);
 
-        $this->mClient->servers->delete($retrievedServer->id);
+        self::$client->servers->delete($retrievedServer->id);
 
         $this->expectException(\Mailosaur\Models\MailosaurException::class);
-        $this->mClient->servers->delete($retrievedServer->id);
+        self::$client->servers->delete($retrievedServer->id);
     }
 
     public function testFailedCreate()
     {
         try {
             $options = new ServerCreateOptions();
-            $this->mClient->servers->create($options);
+            self::$client->servers->create($options);
         } catch(MailosaurException $e) {
             $this->assertEquals('Request had one or more invalid parameters.', $e->getMessage());
             $this->assertEquals('invalid_request', $e->errorType);

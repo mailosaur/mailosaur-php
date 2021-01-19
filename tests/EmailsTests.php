@@ -12,65 +12,65 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 {
     /** @var \Mailosaur\MailosaurClient
      */
-    public $client;
+    protected static $client;
 
     /** @var string */
-    public $server;
+    protected static $server;
 
     /** @var \Mailosaur\Models\MessageSummary[] */
-    public $emails;
+    protected static $emails;
 
 
-    public function setUp(): void
+    public static function setUpBeforeClass(): void
     {
         $baseUrl      = ($h = getenv('MAILOSAUR_BASE_URL')) ? $h : 'https://mailosaur.com/';
         $apiKey       = getenv('MAILOSAUR_API_KEY');
-        $this->server = getenv('MAILOSAUR_SERVER');
+        self::$server = getenv('MAILOSAUR_SERVER');
 
-        if (empty($apiKey) || empty($this->server)) {
+        if (empty($apiKey) || empty(self::$server)) {
             throw new \Exception('Missing necessary environment variables - refer to README.md');
         }
 
-        $this->client = new MailosaurClient($apiKey, $baseUrl);
+        self::$client = new MailosaurClient($apiKey, $baseUrl);
 
-        $this->client->messages->deleteAll($this->server);
+        self::$client->messages->deleteAll(self::$server);
 
-        Mailer::sendEmails($this->client, $this->server, 5);
+        Mailer::sendEmails(self::$client, self::$server, 5);
 
-        $this->emails = $this->client->messages->all($this->server)->items;
+        self::$emails = self::$client->messages->all(self::$server)->items;
     }
 
     public function testListWithReceivedAfter()
     {
         $pastDate = new \DateTime();
         $pastDate->sub(new \DateInterval('PT10M'));
-        $pastEmails = $this->client->messages->all($this->server, null, null, $pastDate)->items;
+        $pastEmails = self::$client->messages->all(self::$server, null, null, $pastDate)->items;
         $this->assertTrue(count($pastEmails) > 0);
 
-        $futureEmails = $this->client->messages->all($this->server, null, null, new \DateTime())->items;
+        $futureEmails = self::$client->messages->all(self::$server, null, null, new \DateTime())->items;
         $this->assertCount(0, $futureEmails);
     }
 
     public function testGet()
     {
         $host             = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.io';
-        $testEmailAddress = 'wait_for_test.' . $this->server . '@' . $host;
+        $testEmailAddress = 'wait_for_test.' . self::$server . '@' . $host;
 
-        Mailer::sendEmail($this->client, $this->server, $testEmailAddress);
+        Mailer::sendEmail(self::$client, self::$server, $testEmailAddress);
 
         $criteria         = new SearchCriteria();
         $criteria->sentTo = $testEmailAddress;
 
-        $email = $this->client->messages->get($this->server, $criteria);
+        $email = self::$client->messages->get(self::$server, $criteria);
 
         $this->validateEmail($email);
     }
 
     public function testGetById()
     {
-        $emailToRetrieve = $this->emails[0];
+        $emailToRetrieve = self::$emails[0];
 
-        $email = $this->client->messages->getById($emailToRetrieve->id);
+        $email = self::$client->messages->getById($emailToRetrieve->id);
 
         $this->validateEmail($email);
         $this->validateHeaders($email);
@@ -79,32 +79,32 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
     public function testGetByIdNotFound()
     {
         $this->expectException(\Mailosaur\Models\MailosaurException::class);
-        $this->client->messages->getById(uniqid());
+        self::$client->messages->getById(uniqid());
     }
 
     public function testSearchNoCriteriaError()
     {
         $this->expectException(\Mailosaur\Models\MailosaurException::class);
-        $this->client->messages->search($this->server, new SearchCriteria());
+        self::$client->messages->search(self::$server, new SearchCriteria());
     }
 
     public function testSearchTimeoutErrorsSuppressed()
     {
         $criteria = new SearchCriteria();
         $criteria->sentFrom = 'neverfound@example.com';
-        $results = $this->client->messages->search($this->server, $criteria, 0, 1, 1, new \DateTime(), false)->items;
+        $results = self::$client->messages->search(self::$server, $criteria, 0, 1, 1, new \DateTime(), false)->items;
         $this->assertCount(0, $results);
     }
 
     public function testSearchBySentFrom()
     {
-        $targetEmail = $this->emails[1];
+        $targetEmail = self::$emails[1];
 
         $criteria = new SearchCriteria();
 
         $criteria->sentFrom = $targetEmail->from[0]->email;
 
-        $results = $this->client->messages->search($this->server, $criteria)->items;
+        $results = self::$client->messages->search(self::$server, $criteria)->items;
 
         $this->assertCount(1, $results);
         $this->assertEquals($targetEmail->from[0]->email, $results[0]->from[0]->email);
@@ -118,18 +118,18 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $criteria         = new SearchCriteria();
         $criteria->sentFrom = '.not_an_email_address';
 
-        $this->client->messages->search($this->server, $criteria);
+        self::$client->messages->search(self::$server, $criteria);
     }
 
     public function testSearchBySentTo()
     {
-        $targetEmail = $this->emails[1];
+        $targetEmail = self::$emails[1];
 
         $criteria = new SearchCriteria();
 
         $criteria->sentTo = $targetEmail->to[0]->email;
 
-        $results = $this->client->messages->search($this->server, $criteria)->items;
+        $results = self::$client->messages->search(self::$server, $criteria)->items;
 
         $this->assertCount(1, $results);
         $this->assertEquals($targetEmail->to[0]->email, $results[0]->to[0]->email);
@@ -143,17 +143,17 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $criteria         = new SearchCriteria();
         $criteria->sentTo = '.not_an_email_address';
 
-        $this->client->messages->search($this->server, $criteria);
+        self::$client->messages->search(self::$server, $criteria);
     }
 
     public function testSearchByBody()
     {
-        $targetEmail    = $this->emails[1];
+        $targetEmail    = self::$emails[1];
         $uniqueString   = substr($targetEmail->subject, 0, 10);
         $criteria       = new SearchCriteria();
         $criteria->body = $uniqueString . ' html';
 
-        $results = $this->client->messages->search($this->server, $criteria)->items;
+        $results = self::$client->messages->search(self::$server, $criteria)->items;
 
         $this->assertCount(1, $results);
         $this->assertEquals($targetEmail->to[0]->email, $results[0]->to[0]->email);
@@ -162,11 +162,11 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     public function testSearchBySubject()
     {
-        $targetEmail       = $this->emails[1];
+        $targetEmail       = self::$emails[1];
         $criteria          = new SearchCriteria();
         $criteria->subject = substr($targetEmail->subject, 0, 10);
 
-        $results = $this->client->messages->search($this->server, $criteria)->items;
+        $results = self::$client->messages->search(self::$server, $criteria)->items;
 
         $this->assertCount(1, $results);
         $this->assertEquals($targetEmail->to[0]->email, $results[0]->to[0]->email);
@@ -175,28 +175,28 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     public function testSearchMatchAll()
     {
-        $targetEmail       = $this->emails[1];
+        $targetEmail       = self::$emails[1];
         $criteria          = new SearchCriteria();
         $criteria->subject = substr($targetEmail->subject, 0, 10);
         $criteria->body    = 'this is a link';
         $criteria->match   = 'ALL';
 
-        $results = $this->client->messages->search($this->server, $criteria)->items;
+        $results = self::$client->messages->search(self::$server, $criteria)->items;
 
         $this->assertCount(1, $results);
     }
 
     public function testSearchMatchAny()
     {
-        $targetEmail       = $this->emails[1];
+        $targetEmail       = self::$emails[1];
         $criteria          = new SearchCriteria();
         $criteria->subject = substr($targetEmail->subject, 0, 10);
         $criteria->body    = 'this is a link';
         $criteria->match   = 'ANY';
 
-        $results = $this->client->messages->search($this->server, $criteria)->items;
+        $results = self::$client->messages->search(self::$server, $criteria)->items;
 
-        $this->assertCount(5, $results);
+        $this->assertCount(6, $results);
     }
 
     public function testSearchWithSpecialCharacters()
@@ -204,16 +204,16 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $criteria          = new SearchCriteria();
         $criteria->subject = 'Search with ellipsis … and emoji 👨🏿‍🚒';
 
-        $results = $this->client->messages->search($this->server, $criteria)->items;
+        $results = self::$client->messages->search(self::$server, $criteria)->items;
 
         $this->assertCount(0, $results);
     }
 
     public function testSpamAnalysis()
     {
-        $targetId = $this->emails[0]->id;
+        $targetId = self::$emails[0]->id;
 
-        $result = $this->client->analysis->spam($targetId);
+        $result = self::$client->analysis->spam($targetId);
 
         foreach ($result->spamFilterResults->spamAssassin as $rule) {
             $this->assertNotEmpty($rule->rule);
@@ -223,19 +223,19 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     public function testDelete()
     {
-        $targetEmailId = $this->emails[4]->id;
+        $targetEmailId = self::$emails[4]->id;
 
-        $this->client->messages->delete($targetEmailId);
+        self::$client->messages->delete($targetEmailId);
 
         $this->expectException(\Mailosaur\Models\MailosaurException::class);
 
-        $this->client->messages->delete($targetEmailId);
+        self::$client->messages->delete($targetEmailId);
     }
 
     public function testAll()
     {
-        foreach ($this->emails as $emailSummary) {
-            $this->validateEmailSummary($emailSummary);
+        foreach (self::$emails as $emailsummary) {
+            $this->validateEmailSummary($emailsummary);
         }
     }
 

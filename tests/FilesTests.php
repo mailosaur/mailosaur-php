@@ -9,53 +9,53 @@ use Mailosaur\Models\SearchCriteria;
 class FilesTests extends \PHPUnit\Framework\TestCase
 {
     /** @var \Mailosaur\MailosaurClient */
-    public $client;
+    protected static $client;
 
     /** @var string */
-    public $server;
+    protected static $server;
 
     /** @var \Mailosaur\Models\Message */
-    public $email;
+    protected static $email;
 
-    public function setUp(): void
+    public static function setUpBeforeClass(): void
     {
         $baseUrl      = ($h = getenv('MAILOSAUR_BASE_URL')) ? $h : 'https://mailosaur.com/';
         $apiKey       = getenv('MAILOSAUR_API_KEY');
-        $this->server = getenv('MAILOSAUR_SERVER');
+        self::$server = getenv('MAILOSAUR_SERVER');
 
-        if (empty($apiKey) || empty($this->server)) {
+        if (empty($apiKey) || empty(self::$server)) {
             throw new \Exception('Missing necessary environment variables - refer to README.md');
         }
 
-        $this->client = new MailosaurClient($apiKey, $baseUrl);
+        self::$client = new MailosaurClient($apiKey, $baseUrl);
 
-        $this->client->messages->deleteAll($this->server);
+        self::$client->messages->deleteAll(self::$server);
 
         $host             = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.io';
-        $testEmailAddress = 'wait_for_test.' . $this->server . '@' . $host;
+        $testEmailAddress = 'wait_for_test.' . self::$server . '@' . $host;
 
-        Mailer::sendEmail($this->client, $this->server, $testEmailAddress);
+        Mailer::sendEmail(self::$client, self::$server, $testEmailAddress);
 
         $criteria         = new SearchCriteria();
         $criteria->sentTo = $testEmailAddress;
 
-        $this->email = $this->client->messages->get($this->server, $criteria);
+        self::$email = self::$client->messages->get(self::$server, $criteria);
     }
 
     public function testGetEmail()
     {
-        $result = $this->client->files->getEmail($this->email->id);
+        $result = self::$client->files->getEmail(self::$email->id);
 
         $this->assertNotNull($result);
         $this->assertTrue(strlen($result) > 0);
-        $this->assertStringContainsString($this->email->subject, $result);
+        $this->assertStringContainsString(self::$email->subject, $result);
     }
 
     public function testGetAttachment()
     {
-        $attachment = $this->email->attachments[0];
+        $attachment = self::$email->attachments[0];
 
-        $result = $this->client->files->getAttachment($attachment->id);
+        $result = self::$client->files->getAttachment($attachment->id);
 
         $this->assertNotNull($result);
         $this->assertEquals($attachment->length, strlen($result));
