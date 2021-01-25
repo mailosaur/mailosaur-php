@@ -51,7 +51,6 @@ class ServersTests extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($createdServer->password);
         $this->assertNotNull($createdServer->users);
         $this->assertEquals(0, $createdServer->messages);
-        $this->assertNotNull($createdServer->forwardingRules);
 
         // Retrieve a server and confirm it has expected content
         $retrievedServer = self::$client->servers->get($createdServer->id);
@@ -61,7 +60,6 @@ class ServersTests extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($retrievedServer->password);
         $this->assertNotNull($retrievedServer->users);
         $this->assertEquals(0, $retrievedServer->messages);
-        $this->assertNotNull($retrievedServer->forwardingRules);
 
         // Update a server and confirm it has changed
         $retrievedServer->name = $retrievedServer->name . ' updated with ellipsis … and emoji 👨🏿‍🚒';
@@ -72,7 +70,6 @@ class ServersTests extends \PHPUnit\Framework\TestCase
         $this->assertEquals($retrievedServer->password, $updatedServer->password);
         $this->assertEquals($retrievedServer->users, $updatedServer->users);
         $this->assertEquals($retrievedServer->messages, $updatedServer->messages);
-        $this->assertEquals($retrievedServer->forwardingRules, $updatedServer->forwardingRules);
 
         self::$client->servers->delete($retrievedServer->id);
 

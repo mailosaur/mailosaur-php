@@ -20,9 +20,6 @@ class Server
     /** @var int The number of messages currently in the server. */
     public $messages;
 
-    /** @var \Mailosaur\Models\ForwardingRule[] The rules used to manage email forwarding for this server */
-    public $forwardingRules = array();
-
     public function __construct(\stdClass $data)
     {
         if (property_exists($data, 'id')) {
@@ -44,12 +41,6 @@ class Server
         if (property_exists($data, 'messages')) {
             $this->messages = $data->messages;
         }
-
-        if (property_exists($data, 'forwardingRules') && is_array($data->forwardingRules)) {
-            foreach ($data->forwardingRules as $rule) {
-                $this->forwardingRules[] = new ForwardingRule($rule);
-            }
-        }
     }
 
     /**
@@ -62,13 +53,8 @@ class Server
             'password'        => $this->password,
             'name'            => $this->name,
             'users'           => $this->users,
-            'messages'        => $this->messages,
-            'forwardingRules' => array()
+            'messages'        => $this->messages
         );
-
-        foreach ($this->forwardingRules as $forwardingRule) {
-            $serverInfo['forwardingRules'][] = $forwardingRule->__toArray();
-        }
 
         return $serverInfo;
     }
