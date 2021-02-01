@@ -127,9 +127,9 @@ class Servers extends AOperation
 
     public function generateEmailAddress($server)
     {
-        $host = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.io';
+        $host = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.net';
 
-        return self::randomString() . '.' . $server . '@' . $host;
+        return self::randomString() . '@' . $server . '.' . $host;
     }
 
     public static function randomString()

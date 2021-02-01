@@ -17,15 +17,12 @@ class Mailer
         for ($i = 0; $i < $quantity; $i++) {
             self::sendEmail($client, $server);
         }
-
-        // Allow 2 seconds for any SMTP processing
-        sleep(2);
     }
 
     public static function sendEmail(MailosaurClient $client, $server, $sendToAddress = null)
     {
         $mailer = new SmtpMailer(array(
-            'host' => ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.io',
+            'host' => ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.net',
             'port' => ($p = getenv('MAILOSAUR_SMTP_PORT')) ? (int)$p : 25
         ));
 

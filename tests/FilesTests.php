@@ -31,8 +31,8 @@ class FilesTests extends \PHPUnit\Framework\TestCase
 
         self::$client->messages->deleteAll(self::$server);
 
-        $host             = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.io';
-        $testEmailAddress = 'wait_for_test.' . self::$server . '@' . $host;
+        $host             = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.net';
+        $testEmailAddress = 'wait_for_test@' . self::$server . '.' . $host;
 
         Mailer::sendEmail(self::$client, self::$server, $testEmailAddress);
 

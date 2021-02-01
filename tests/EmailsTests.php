@@ -53,8 +53,8 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     public function testGet()
     {
-        $host             = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.io';
-        $testEmailAddress = 'wait_for_test.' . self::$server . '@' . $host;
+        $host             = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.net';
+        $testEmailAddress = 'wait_for_test@' . self::$server . '.' . $host;
 
         Mailer::sendEmail(self::$client, self::$server, $testEmailAddress);
 
