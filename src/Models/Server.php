@@ -8,9 +8,6 @@ class Server
     /** @var string Unique identifier for the server. Used as username for SMTP/POP3 authentication. */
     public $id;
 
-    /** @var string SMTP/POP3 password. */
-    public $password;
-
     /** @var string A name used to identify the server. */
     public $name;
 
@@ -24,10 +21,6 @@ class Server
     {
         if (property_exists($data, 'id')) {
             $this->id = $data->id;
-        }
-
-        if (property_exists($data, 'password')) {
-            $this->password = $data->password;
         }
 
         if (property_exists($data, 'name')) {
@@ -50,7 +43,6 @@ class Server
     {
         $serverInfo = array(
             'id'              => $this->id,
-            'password'        => $this->password,
             'name'            => $this->name,
             'users'           => $this->users,
             'messages'        => $this->messages

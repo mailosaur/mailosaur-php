@@ -48,7 +48,6 @@ class ServersTests extends \PHPUnit\Framework\TestCase
 
         $this->assertFalse(empty($createdServer->id));
         $this->assertEquals($serverName, $createdServer->name);
-        $this->assertNotNull($createdServer->password);
         $this->assertNotNull($createdServer->users);
         $this->assertEquals(0, $createdServer->messages);
 
@@ -57,7 +56,6 @@ class ServersTests extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($createdServer->id, $retrievedServer->id);
         $this->assertEquals($createdServer->name, $retrievedServer->name);
-        $this->assertNotNull($retrievedServer->password);
         $this->assertNotNull($retrievedServer->users);
         $this->assertEquals(0, $retrievedServer->messages);
 
@@ -67,7 +65,6 @@ class ServersTests extends \PHPUnit\Framework\TestCase
         $updatedServer = self::$client->servers->update($retrievedServer->id, $retrievedServer);
         $this->assertEquals($retrievedServer->id, $updatedServer->id);
         $this->assertEquals($retrievedServer->name, $updatedServer->name);
-        $this->assertEquals($retrievedServer->password, $updatedServer->password);
         $this->assertEquals($retrievedServer->users, $updatedServer->users);
         $this->assertEquals($retrievedServer->messages, $updatedServer->messages);
 
