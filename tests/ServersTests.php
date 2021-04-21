@@ -62,7 +62,7 @@ class ServersTests extends \PHPUnit\Framework\TestCase
         // Retrieve server password
         $password = self::$client->servers->getPassword($createdServer->id);
 
-        $this->assertTrue($password->length >= 8);
+        $this->assertTrue(strlen($password) >= 8);
 
         // Update a server and confirm it has changed
         $retrievedServer->name = $retrievedServer->name . ' updated with ellipsis … and emoji 👨🏿‍🚒';
