@@ -82,6 +82,25 @@ class Servers extends AOperation
     }
 
     /**
+     * <strong>Retrieve server password</strong>
+     *
+     * @param string $id The identifier of the server.
+     *
+     * @return string
+     * @throws \Mailosaur\Models\MailosaurException
+     * @see     https://mailosaur.com/docs/api/#operation/Servers_Get_Password Retrieve server password
+     * @example https://mailosaur.com/docs/api/#operation/Servers_Get_Password
+     */
+    public function getPassword($id)
+    {
+        $response = $this->request('api/servers/' . urlencode($id) . '/password');
+
+        $response = json_decode($response);
+
+        return $response->value;
+    }
+
+    /**
      * <strong>Update a server</strong>
      * <p>Updates a single server and returns it.</p>
      *
