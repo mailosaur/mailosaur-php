@@ -7,6 +7,7 @@ use Mailosaur\Operations\Analysis;
 use Mailosaur\Operations\Files;
 use Mailosaur\Operations\Messages;
 use Mailosaur\Operations\Servers;
+use Mailosaur\Operations\Usage;
 
 class MailosaurClient
 {
@@ -28,6 +29,9 @@ class MailosaurClient
     /** @var Operations\Analysis */
     public $analysis;
 
+    /** @var Operations\Usage */
+    public $usage;
+
 
     public function __construct($apiKey, $baseUri = 'https://mailosaur.com/')
     {
@@ -42,6 +46,8 @@ class MailosaurClient
         $this->files = new Files($this);
 
         $this->analysis = new Analysis($this);
+
+        $this->usage = new Usage($this);
     }
 
     /**
