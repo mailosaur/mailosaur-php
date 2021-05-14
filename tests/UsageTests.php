@@ -6,7 +6,7 @@ namespace Mailosaur_Test;
 use Mailosaur\MailosaurClient;
 use Mailosaur\Models\MailosaurException;
 
-class ServersTests extends \PHPUnit\Framework\TestCase
+class UsageTests extends \PHPUnit\Framework\TestCase
 {
     /** @var \Mailosaur\MailosaurClient */
     protected static $client;
