@@ -252,7 +252,7 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
         $subject = "New message";
 
-        $options = new MessageCreateOptions($serverName);
+        $options = new MessageCreateOptions();
         $options->to = 'anything@' . self::$verifiedDomain;
         $options->send = TRUE;
         $options->subject = $subject;
@@ -270,7 +270,7 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
         $subject = "New HTML message";
 
-        $options = new MessageCreateOptions($serverName);
+        $options = new MessageCreateOptions();
         $options->to = 'anything@' . self::$verifiedDomain;
         $options->send = TRUE;
         $options->subject = $subject;
@@ -289,7 +289,7 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $body = "Forwarded message";
         $targetEmailId = self::$emails[0]->id;
 
-        $options = new MessageForwardOptions($serverName);
+        $options = new MessageForwardOptions();
         $options->to = 'anything@' . self::$verifiedDomain;
         $options->text = $body;
 
@@ -306,7 +306,7 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $body = "<p>Forwarded <strong>HTML</strong> message.</p>";
         $targetEmailId = self::$emails[0]->id;
 
-        $options = new MessageForwardOptions($serverName);
+        $options = new MessageForwardOptions();
         $options->to = 'anything@' . self::$verifiedDomain;
         $options->html = $body;
 
@@ -323,7 +323,7 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $body = "Reply message";
         $targetEmailId = self::$emails[0]->id;
 
-        $options = new MessageReplyOptions($serverName);
+        $options = new MessageReplyOptions();
         $options->text = $body;
 
         $message = self::$client->messages->reply($targetEmailId, $options);
@@ -339,7 +339,7 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $body = "<p>Reply <strong>HTML</strong> message.</p>";
         $targetEmailId = self::$emails[0]->id;
 
-        $options = new MessageReplyOptions($serverName);
+        $options = new MessageReplyOptions();
         $options->html = $body;
 
         $message = self::$client->messages->reply($targetEmailId, $options);
