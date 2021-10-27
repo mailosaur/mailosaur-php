@@ -27,7 +27,7 @@ class Mailer
         ));
 
         $randomString = Servers::randomString();
-        $verifiedDomain = getenv('MAILOSAUR_VERIFIED_DOMAIN');
+        $verifiedDomain = ($vd = getenv('MAILOSAUR_VERIFIED_DOMAIN')) ? $vd : 'mailosaur.net';
 
         $from          = join(' ', array($randomString, $randomString, '<' . $randomString . '@' . $verifiedDomain . '>'));
         $sendToAddress = join(' ', array($randomString, $randomString, '<' . (($sendToAddress === null) ? $client->servers->generateEmailAddress($server) : $sendToAddress) . '>'));

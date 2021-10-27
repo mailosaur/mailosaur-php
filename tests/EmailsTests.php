@@ -248,6 +248,8 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     public function testCreateSendText()
     {
+        if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
+
         $subject = "New message";
 
         $options = new MessageCreateOptions($serverName);
@@ -264,6 +266,8 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     public function testCreateSendHtml()
     {
+        if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
+
         $subject = "New HTML message";
 
         $options = new MessageCreateOptions($serverName);
@@ -280,6 +284,8 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     public function testForwardText()
     {
+        if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
+
         $body = "Forwarded message";
         $targetEmailId = self::$emails[0]->id;
 
@@ -295,6 +301,8 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     public function testForwardHtml()
     {
+        if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
+
         $body = "<p>Forwarded <strong>HTML</strong> message.</p>";
         $targetEmailId = self::$emails[0]->id;
 
@@ -310,6 +318,8 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     public function testReplyText()
     {
+        if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
+
         $body = "Reply message";
         $targetEmailId = self::$emails[0]->id;
 
@@ -324,6 +334,8 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     public function testReplyHtml()
     {
+        if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
+
         $body = "<p>Reply <strong>HTML</strong> message.</p>";
         $targetEmailId = self::$emails[0]->id;
 
