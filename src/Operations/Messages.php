@@ -6,6 +6,9 @@ use Mailosaur\Models\MailosaurException;
 use Mailosaur\Models\Message;
 use Mailosaur\Models\MessageListResult;
 use Mailosaur\Models\SearchCriteria;
+use Mailosaur\Models\MessageCreateOptions;
+use Mailosaur\Models\MessageForwardOptions;
+use Mailosaur\Models\MessageReplyOptions;
 
 class Messages extends AOperation
 {
@@ -200,5 +203,102 @@ class Messages extends AOperation
 
             sleep($delay / 1000);
         }
+    }
+
+    /**
+     * <strong>Create a message</strong>
+     * <p>Creates a new message that can be sent to a verified email address. This is 
+     * useful in scenarios where you want an email to trigger a workflow in your
+     * product.</p>
+     *
+     * @param $server
+     * @param $messageCreateOptions
+     *
+     * @return \Mailosaur\Models\Message
+     * @throws \Mailosaur\Models\MailosaurException
+     * @see     https://mailosaur.com/docs/api/#operation/Messages_Create Create a message
+     * @example https://mailosaur.com/docs/api/#operation/Messages_Create
+     */
+    public function create($server, MessageCreateOptions $messageCreateOptions)
+    {
+        $path = 'api/messages?' . http_build_query(array(
+            'server' => $server
+        ));
+
+        $payload = $messageCreateOptions->toJsonString();
+
+        $response = $this->request(
+            $path,
+            array(
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS    => $payload,
+                CURLOPT_HTTPHEADER    => array('Content-Type:application/json', 'Content-Length: ' . strlen($payload))
+            )
+        );
+
+        $response = json_decode($response);
+
+        return new Message($response);
+    }
+
+    /**
+     * <strong>Forward an email</strong>
+     * <p>Forwards the specified email to a verified email address.</p>
+     *
+     * @param $id
+     * @param $messageForwardOptions
+     *
+     * @return \Mailosaur\Models\Message
+     * @throws \Mailosaur\Models\MailosaurException
+     * @see     https://mailosaur.com/docs/api/#operation/Messages_Forward Forward an email
+     * @example https://mailosaur.com/docs/api/#operation/Messages_Forward
+     */
+    public function forward($id, MessageForwardOptions $messageForwardOptions)
+    {
+        $payload = $messageForwardOptions->toJsonString();
+
+        $response = $this->request(
+            'api/messages/' . $id . '/forward',
+            array(
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS    => $payload,
+                CURLOPT_HTTPHEADER    => array('Content-Type:application/json', 'Content-Length: ' . strlen($payload))
+            )
+        );
+
+        $response = json_decode($response);
+
+        return new Message($response);
+    }
+
+    /**
+     * <strong>Reply to an email</strong>
+     * <p>Sends a reply to the specified email. This is useful for when 
+     * simulating a user replying to one of your emails.</p>
+     *
+     * @param $id
+     * @param $messageReplyOptions
+     *
+     * @return \Mailosaur\Models\Message
+     * @throws \Mailosaur\Models\MailosaurException
+     * @see     https://mailosaur.com/docs/api/#operation/Messages_Reply Reply to an email
+     * @example https://mailosaur.com/docs/api/#operation/Messages_Reply
+     */
+    public function reply($id, MessageReplyOptions $messageReplyOptions)
+    {
+        $payload = $messageReplyOptions->toJsonString();
+
+        $response = $this->request(
+            'api/messages/' . $id . '/reply',
+            array(
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS    => $payload,
+                CURLOPT_HTTPHEADER    => array('Content-Type:application/json', 'Content-Length: ' . strlen($payload))
+            )
+        );
+
+        $response = json_decode($response);
+
+        return new Message($response);
     }
 }

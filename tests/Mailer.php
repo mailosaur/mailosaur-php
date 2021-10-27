@@ -27,8 +27,9 @@ class Mailer
         ));
 
         $randomString = Servers::randomString();
+        $verifiedDomain = getenv('MAILOSAUR_VERIFIED_DOMAIN');
 
-        $from          = join(' ', array($randomString, $randomString, '<' . $client->servers->generateEmailAddress($server) . '>'));
+        $from          = join(' ', array($randomString, $randomString, '<' . $randomString . '@' . $verifiedDomain . '>'));
         $sendToAddress = join(' ', array($randomString, $randomString, '<' . (($sendToAddress === null) ? $client->servers->generateEmailAddress($server) : $sendToAddress) . '>'));
         $htmlString    = str_replace('REPLACED_DURING_TEST', $randomString, file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . self::$sHtmlFile));
         $textString    = str_replace('REPLACED_DURING_TEST', $randomString, file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . self::$sTextFile));

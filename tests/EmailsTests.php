@@ -7,6 +7,9 @@ use Mailosaur\MailosaurClient;
 use Mailosaur\Models\Message;
 use Mailosaur\Models\MessageSummary;
 use Mailosaur\Models\SearchCriteria;
+use Mailosaur\Models\MessageCreateOptions;
+use Mailosaur\Models\MessageForwardOptions;
+use Mailosaur\Models\MessageReplyOptions;
 
 class EmailsTests extends \PHPUnit\Framework\TestCase
 {
@@ -17,6 +20,9 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
     /** @var string */
     protected static $server;
 
+    /** @var string */
+    protected static $verifiedDomain;
+
     /** @var \Mailosaur\Models\MessageSummary[] */
     protected static $emails;
 
@@ -26,6 +32,7 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $baseUrl      = ($h = getenv('MAILOSAUR_BASE_URL')) ? $h : 'https://mailosaur.com/';
         $apiKey       = getenv('MAILOSAUR_API_KEY');
         self::$server = getenv('MAILOSAUR_SERVER');
+        self::$verifiedDomain = getenv('MAILOSAUR_VERIFIED_DOMAIN');
 
         if (empty($apiKey) || empty(self::$server)) {
             throw new \Exception('Missing necessary environment variables - refer to README.md');
@@ -237,6 +244,96 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         foreach (self::$emails as $emailsummary) {
             $this->validateEmailSummary($emailsummary);
         }
+    }
+
+    public function testCreateSendText()
+    {
+        $subject = "New message";
+
+        $options = new MessageCreateOptions($serverName);
+        $options->to = 'anything@' . self::$verifiedDomain;
+        $options->send = TRUE;
+        $options->subject = $subject;
+        $options->text = 'This is a new email';
+
+        $message = self::$client->messages->create(self::$server, $options);
+
+        $this->assertNotNull($message->id);
+        $this->assertEquals($subject, $message->subject);
+    }
+
+    public function testCreateSendHtml()
+    {
+        $subject = "New HTML message";
+
+        $options = new MessageCreateOptions($serverName);
+        $options->to = 'anything@' . self::$verifiedDomain;
+        $options->send = TRUE;
+        $options->subject = $subject;
+        $options->html = '<p>This is a new email.</p>';
+
+        $message = self::$client->messages->create(self::$server, $options);
+
+        $this->assertNotNull($message->id);
+        $this->assertEquals($subject, $message->subject);
+    }
+
+    public function testForwardText()
+    {
+        $body = "Forwarded message";
+        $targetEmailId = self::$emails[0]->id;
+
+        $options = new MessageForwardOptions($serverName);
+        $options->to = 'anything@' . self::$verifiedDomain;
+        $options->text = $body;
+
+        $message = self::$client->messages->forward($targetEmailId, $options);
+
+        $this->assertNotNull($message->id);
+        $this->assertNotFalse(strpos($message->text->body, $body));
+    }
+
+    public function testForwardHtml()
+    {
+        $body = "<p>Forwarded <strong>HTML</strong> message.</p>";
+        $targetEmailId = self::$emails[0]->id;
+
+        $options = new MessageForwardOptions($serverName);
+        $options->to = 'anything@' . self::$verifiedDomain;
+        $options->html = $body;
+
+        $message = self::$client->messages->forward($targetEmailId, $options);
+
+        $this->assertNotNull($message->id);
+        $this->assertNotFalse(strpos($message->html->body, $body));
+    }
+
+    public function testReplyText()
+    {
+        $body = "Reply message";
+        $targetEmailId = self::$emails[0]->id;
+
+        $options = new MessageReplyOptions($serverName);
+        $options->text = $body;
+
+        $message = self::$client->messages->reply($targetEmailId, $options);
+
+        $this->assertNotNull($message->id);
+        $this->assertNotFalse(strpos($message->text->body, $body));
+    }
+
+    public function testReplyHtml()
+    {
+        $body = "<p>Reply <strong>HTML</strong> message.</p>";
+        $targetEmailId = self::$emails[0]->id;
+
+        $options = new MessageReplyOptions($serverName);
+        $options->html = $body;
+
+        $message = self::$client->messages->reply($targetEmailId, $options);
+
+        $this->assertNotNull($message->id);
+        $this->assertNotFalse(strpos($message->html->body, $body));
     }
 
     private function validateEmailSummary(MessageSummary $email)
