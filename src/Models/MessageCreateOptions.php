@@ -30,6 +30,11 @@ class MessageCreateOptions
      */
     public $html = null;
 
+    /**
+     * @var array|Attachment[] Any message attachments.
+     */
+    public $attachments = null;
+
     public function __toArray()
     {
         return array(
@@ -38,6 +43,7 @@ class MessageCreateOptions
             'subject' => $this->subject,
             'text'    => $this->text,
             'html'    => $this->html,
+            'attachments'    => $this->attachments,
         );
     }
 

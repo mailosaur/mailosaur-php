@@ -15,6 +15,9 @@ class Attachment
     public $fileName;
 
     /** @var string */
+    public $content;
+
+    /** @var string */
     public $contentId;
 
     /** @var int */
@@ -40,6 +43,10 @@ class Attachment
             $this->fileName = $data->fileName;
         }
 
+        if (property_exists($data, 'content')) {
+            $this->content = $data->content;
+        }
+        
         if (property_exists($data, 'contentId')) {
             $this->contentId = $data->contentId;
         }

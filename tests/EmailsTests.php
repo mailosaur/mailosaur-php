@@ -10,6 +10,7 @@ use Mailosaur\Models\SearchCriteria;
 use Mailosaur\Models\MessageCreateOptions;
 use Mailosaur\Models\MessageForwardOptions;
 use Mailosaur\Models\MessageReplyOptions;
+use Mailosaur\Models\Attachment;
 
 class EmailsTests extends \PHPUnit\Framework\TestCase
 {
@@ -282,6 +283,39 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->assertEquals($subject, $message->subject);
     }
 
+    public function testCreateSendWithAttachment()
+    {
+        if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
+
+        $subject = "New message with attachment";
+
+        $options = new MessageCreateOptions();
+        $options->to = 'anything@' . self::$verifiedDomain;
+        $options->send = TRUE;
+        $options->subject = $subject;
+        $options->html = '<p>This is a new email.</p>';
+
+        $data = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'Resources/cat.png');
+
+        $attachment = new Attachment((object)[
+            "fileName" => "cat.png",
+            "content" => base64_encode($data),
+            "contentType" => "image/png"
+        ]);
+
+        $options->attachments = [$attachment];
+
+        $message = self::$client->messages->create(self::$server, $options);
+
+        $this->assertCount(1, $message->attachments);
+        $file1 = $message->attachments[0];
+        $this->assertNotNull($file1->id);
+        $this->assertEquals(82138, $file1->length);
+        $this->assertNotNull($file1->url);
+        $this->assertEquals('cat.png', $file1->fileName);
+        $this->assertEquals('image/png', $file1->contentType);
+    }
+
     public function testForwardText()
     {
         if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
@@ -346,6 +380,37 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
         $this->assertNotNull($message->id);
         $this->assertNotFalse(strpos($message->html->body, $body));
+    }
+
+    public function testReplyWithAttachment()
+    {
+        if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
+
+        $body = "<p>Reply <strong>HTML</strong> message.</p>";
+        $targetEmailId = self::$emails[0]->id;
+
+        $options = new MessageReplyOptions();
+        $options->html = $body;
+        
+        $data = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'Resources/cat.png');
+
+        $attachment = new Attachment((object)[
+            "fileName" => "cat.png",
+            "content" => base64_encode($data),
+            "contentType" => "image/png"
+        ]);
+
+        $options->attachments = [$attachment];
+
+        $message = self::$client->messages->reply($targetEmailId, $options);
+
+        $this->assertCount(1, $message->attachments);
+        $file1 = $message->attachments[0];
+        $this->assertNotNull($file1->id);
+        $this->assertEquals(82138, $file1->length);
+        $this->assertNotNull($file1->url);
+        $this->assertEquals('cat.png', $file1->fileName);
+        $this->assertEquals('image/png', $file1->contentType);
     }
 
     private function validateEmailSummary(MessageSummary $email)
