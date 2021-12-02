@@ -16,11 +16,6 @@ class MessageSummary
     public $server;
 
     /**
-     * @var MessageAddress[]
-     */
-    public $rcpt = array();
-
-    /**
      * @var MessageAddress[] The sender of the message.
      */
     public $from = array();
@@ -68,12 +63,6 @@ class MessageSummary
 
         if (property_exists($data, 'server')) {
             $this->server = $data->server;
-        }
-
-        if (property_exists($data, 'rcpt') && is_array($data->rcpt)) {
-            foreach ($data->rcpt as $rcpt) {
-                $this->rcpt[] = new MessageAddress($rcpt);
-            }
         }
 
         if (property_exists($data, 'from') && is_array($data->from)) {

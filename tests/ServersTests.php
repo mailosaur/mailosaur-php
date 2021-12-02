@@ -88,7 +88,7 @@ class ServersTests extends \PHPUnit\Framework\TestCase
             $this->assertEquals('Request had one or more invalid parameters.', $e->getMessage());
             $this->assertEquals('invalid_request', $e->errorType);
             $this->assertEquals(400, $e->httpStatusCode);
-            $this->assertEquals('{"type":"ValidationError","messages":{"name":"Please provide a name for your server"}}', $e->httpResponseBody);
+            $this->assertStringContainsString('{"type":', $e->httpResponseBody);
         }
     }
 }
