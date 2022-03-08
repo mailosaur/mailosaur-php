@@ -55,7 +55,9 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $pastEmails = self::$client->messages->all(self::$server, null, null, $pastDate)->items;
         $this->assertTrue(count($pastEmails) > 0);
 
-        $futureEmails = self::$client->messages->all(self::$server, null, null, new \DateTime())->items;
+        $futureDate = new \DateTime();
+        $futureDate->add(new \DateInterval('PT1M'));
+        $futureEmails = self::$client->messages->all(self::$server, null, null, $futureDate)->items;
         $this->assertCount(0, $futureEmails);
     }
 
@@ -480,6 +482,11 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->assertEquals('http://invalid/', $email->html->links[2]->href);
         $this->assertEquals('invalid', $email->html->links[2]->text);
 
+        // html.codes
+        $this->assertCount(2, $email->html->codes);
+        $this->assertEquals('123456', $email->html->codes[0]->value);
+        $this->assertEquals('G3H1Y2', $email->html->codes[1]->value);
+
         // html.images
         $this->assertStringStartsWith('cid:', $email->html->images[1]->src);
         $this->assertEquals('Inline image 1', $email->html->images[1]->alt);
@@ -496,6 +503,11 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->assertEquals($email->text->links[0]->href, $email->text->links[0]->text);
         $this->assertEquals('https://mailosaur.com/', $email->text->links[1]->href);
         $this->assertEquals($email->text->links[1]->href, $email->text->links[1]->text);
+
+        // text.codes
+        $this->assertCount(2, $email->text->codes);
+        $this->assertEquals('654321', $email->text->codes[0]->value);
+        $this->assertEquals('5H0Y2', $email->text->codes[1]->value);
     }
 
     private function validateHeaders(Message $email)

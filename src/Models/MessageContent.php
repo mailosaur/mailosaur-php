@@ -8,6 +8,9 @@ class MessageContent
     /** @var Link[] */
     public $links = array();
 
+    /** @var Code[] */
+    public $codes = array();
+
     /** @var Image[] */
     public $images = array();
 
@@ -19,6 +22,12 @@ class MessageContent
         if (property_exists($data, 'links') && is_array($data->links)) {
             foreach ($data->links as $link) {
                 $this->links[] = new Link($link);
+            }
+        }
+
+        if (property_exists($data, 'codes') && is_array($data->codes)) {
+            foreach ($data->codes as $code) {
+                $this->codes[] = new Code($code);
             }
         }
 

@@ -148,13 +148,12 @@ class Servers extends AOperation
     {
         $host = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.net';
 
-        return self::randomString() . '@' . $server . '.' . $host;
+        return self::randomString(10) . '@' . $server . '.' . $host;
     }
 
-    public static function randomString()
+    public static function randomString($length)
     {
-        $chars = str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
-
-        return substr($chars, rand(0, strlen($chars) - 10), 10);
+        $str_result = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        return substr(str_shuffle($str_result), 0, $length);
     }
 }

@@ -26,7 +26,7 @@ class Mailer
             'port' => ($p = getenv('MAILOSAUR_SMTP_PORT')) ? (int)$p : 25
         ));
 
-        $randomString = Servers::randomString();
+        $randomString = Servers::randomString(10);
         $verifiedDomain = ($vd = getenv('MAILOSAUR_VERIFIED_DOMAIN')) ? $vd : 'mailosaur.net';
 
         $from          = join(' ', array($randomString, $randomString, '<' . $randomString . '@' . $verifiedDomain . '>'));
