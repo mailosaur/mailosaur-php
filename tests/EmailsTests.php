@@ -121,16 +121,6 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->assertEquals($targetEmail->subject, $results[0]->subject);
     }
 
-    public function testSearchBySentFromInvalidEmail()
-    {
-        $this->expectException(\Mailosaur\Models\MailosaurException::class);
-
-        $criteria         = new SearchCriteria();
-        $criteria->sentFrom = '.not_an_email_address';
-
-        self::$client->messages->search(self::$server, $criteria);
-    }
-
     public function testSearchBySentTo()
     {
         $targetEmail = self::$emails[1];
@@ -144,16 +134,6 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->assertCount(1, $results);
         $this->assertEquals($targetEmail->to[0]->email, $results[0]->to[0]->email);
         $this->assertEquals($targetEmail->subject, $results[0]->subject);
-    }
-
-    public function testSearchBySentToInvalidEmail()
-    {
-        $this->expectException(\Mailosaur\Models\MailosaurException::class);
-
-        $criteria         = new SearchCriteria();
-        $criteria->sentTo = '.not_an_email_address';
-
-        self::$client->messages->search(self::$server, $criteria);
     }
 
     public function testSearchByBody()
