@@ -26,7 +26,7 @@ class Messages extends AOperation
      * @see     https://mailosaur.com/docs/api/#operation/Messages_Get Retrieve a message docs
      * @example https://mailosaur.com/docs/api/#operation/Messages_Get
      */
-    public function get($server, SearchCriteria $searchCriteria, $timeout = 10000, DateTime $receivedAfter = null)
+    public function get($server, SearchCriteria $searchCriteria, $timeout = 10000, \DateTime $receivedAfter = null)
     {
         if (strlen($server) != 8) {
             throw new MailosaurException('Must provide a valid Server ID.', 'invalid_request');
