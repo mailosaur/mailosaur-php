@@ -42,9 +42,13 @@ class DevicesTests extends \PHPUnit\Framework\TestCase
         $otpResult = self::$client->devices->otp($createdDevice->id);
         $this->assertEquals(6, strlen($otpResult->code));
 
-        $this->assertEquals(1, count(self::$client->devices->all()->items));
+        $before = self::$client->devices->all();
+        $this->assertTrue(in_array($createdDevice->id, array_column($before->items, 'id')));
+
         self::$client->devices->delete($createdDevice->id);
-        $this->assertEquals(0, count(self::$client->devices->all()->items));
+
+        $after = self::$client->devices->all();
+        $this->assertFalse(in_array($createdDevice->id, array_column($after->items, 'id')));
     }
 
     public function testOtpViaSharedSecret()
