@@ -85,7 +85,7 @@ class ServersTests extends \PHPUnit\Framework\TestCase
             $options = new ServerCreateOptions();
             self::$client->servers->create($options);
         } catch(MailosaurException $e) {
-            $this->assertEquals('Request had one or more invalid parameters.', $e->getMessage());
+            $this->assertEquals('(name) Please provide a name for your server\r\n', $e->getMessage());
             $this->assertEquals('invalid_request', $e->errorType);
             $this->assertEquals(400, $e->httpStatusCode);
             $this->assertStringContainsString('{"type":', $e->httpResponseBody);

@@ -43,17 +43,26 @@ abstract class AOperation
 
         $response     = curl_exec($curl);
         $requestState = curl_getinfo($curl);
+        $message      = '';
 
         if ($requestState['http_code'] != 200 && $requestState['http_code'] != 204) {
             switch ($requestState['http_code']) {
                 case 400:
-                    throw new MailosaurException('Request had one or more invalid parameters.', 'invalid_request', $requestState['http_code'], $response);
+                    try {
+                        $json = json_decode($response);
+                        foreach ($json->{'errors'} as &$err) {
+                            $message .= '(' . $err->field . ') ' . $err->detail[0]->description . '\r\n';
+                        }
+                    } catch (Exception $ex) {
+                        $message = 'Request had one or more invalid parameters.';
+                    }
+                    throw new MailosaurException($message, 'invalid_request', $requestState['http_code'], $response);
                 case 401:
                     throw new MailosaurException('Authentication failed, check your API key.', 'authentication_error', $requestState['http_code'], $response);
                 case 403:
                     throw new MailosaurException('Insufficient permission to perform that task.', 'permission_error', $requestState['http_code'], $response);
                 case 404:
-                    throw new MailosaurException('Request did not find any matching resources.', 'invalid_request', $requestState['http_code'], $response);
+                    throw new MailosaurException('Not found, check input parameters.', 'invalid_request', $requestState['http_code'], $response);
                 default:
                     throw new MailosaurException('An API error occurred, see httpResponse for further information.', 'api_error', $requestState['http_code'], $response);
             }
