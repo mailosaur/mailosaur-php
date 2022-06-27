@@ -36,7 +36,7 @@ class ErrorsTests extends \PHPUnit\Framework\TestCase
             $options = new ServerCreateOptions();
             $client->servers->create($options);
         } catch(MailosaurException $e) {
-            $this->assertEquals('(name) Please provide a name for your server\r\n', $e->getMessage());
+            $this->assertEquals('(name) Servers need a name\r\n', $e->getMessage());
         }
     }
 }
