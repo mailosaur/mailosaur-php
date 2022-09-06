@@ -11,6 +11,12 @@ class MessageCreateOptions
     public $to = null;
 
     /**
+     * @var string Partially overrides of the message's 'from' address. This **must** be an address ending 
+     * with `YOUR_SERVER.mailosaur.net`, such as `my-emails @a1bcdef2.mailosaur.net`.
+     */
+    public $from = null;
+
+    /**
      * @var bool If true, email will be sent upon creation.
      */
     public $send = null;
@@ -39,6 +45,7 @@ class MessageCreateOptions
     {
         return array(
             'to'  => $this->to,
+            'from'  => $this->from,
             'send'  => $this->send,
             'subject' => $this->subject,
             'text'    => $this->text,

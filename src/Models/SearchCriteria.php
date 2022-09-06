@@ -16,6 +16,21 @@ class SearchCriteria
     public $sentTo = null;
 
     /**
+     * @var string The full email address to which the target email was sent.
+     */
+    public $to = null;
+
+    /**
+     * @var string The full email address to which the target email was sent.
+     */
+    public $cc = null;
+
+    /**
+     * @var string The full email address to which the target email was sent.
+     */
+    public $bcc = null;
+
+    /**
      * @var string The value to seek within the target email's subject line.
      */
     public $subject = null;
