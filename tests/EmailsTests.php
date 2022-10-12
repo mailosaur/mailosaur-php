@@ -417,6 +417,7 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
     private function validateMetadata(Message $email)
     {
+        $this->assertEquals('Email', $email->type);
         $this->assertCount(1, $email->from);
         $this->assertCount(1, $email->to);
         $this->assertNotEmpty($email->from[0]->email);

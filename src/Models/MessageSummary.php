@@ -11,6 +11,11 @@ class MessageSummary
     public $id;
 
     /**
+     * @var string The type of message.
+     */
+    public $type;
+
+    /**
      * @var string Identifier for the server in which the message is located.
      */
     public $server;
@@ -59,6 +64,10 @@ class MessageSummary
     {
         if (property_exists($data, 'id')) {
             $this->id = $data->id;
+        }
+
+        if (property_exists($data, 'type')) {
+            $this->type = $data->type;
         }
 
         if (property_exists($data, 'server')) {
