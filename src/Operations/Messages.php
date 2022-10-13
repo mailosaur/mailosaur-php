@@ -101,7 +101,7 @@ class Messages extends AOperation
             'page' => $page,
             'itemsPerPage' => $itemsPerPage,
             'receivedAfter' => ($receivedAfter != null) ? $receivedAfter->format(\DateTime::ATOM) : null,
-            'dir' => ($dir != null) ? $dir : ''
+            'dir' => ($dir != null) ? $dir : null
         ));
 
         $messagesResponse = $this->request($path);
@@ -154,7 +154,7 @@ class Messages extends AOperation
             'page' => $page,
             'itemsPerPage' => $itemsPerPage,
             'receivedAfter' => ($receivedAfter != null) ? $receivedAfter->format(\DateTime::ATOM) : null,
-            'dir' => ($dir != null) ? $dir : ''
+            'dir' => ($dir != null) ? $dir : null
         ));
 
         $pollCount = 0;
