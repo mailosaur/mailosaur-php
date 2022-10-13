@@ -20,13 +20,15 @@ class Messages extends AOperation
      * @param SearchCriteria $searchCriteria The search criteria to use in order to find a match.
      * @param int            $timeout        Specify how long to wait for a matching result (in milliseconds).
      * @param \DateTime      $receivedAfter  Limits results to only messages received after this date/time.
+     * @param string         $dir            Optionally limits results based on the direction (`Sent` or
+     *                                       `Received`), with the default being `Received`.
      *
      * @return Message
      * @throws MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_Get Retrieve a message docs
      * @example https://mailosaur.com/docs/api/#operation/Messages_Get
      */
-    public function get($server, SearchCriteria $searchCriteria, $timeout = 10000, \DateTime $receivedAfter = null)
+    public function get($server, SearchCriteria $searchCriteria, $timeout = 10000, \DateTime $receivedAfter = null, $dir = null)
     {
         if (strlen($server) != 8) {
             throw new MailosaurException('Must provide a valid Server ID.', 'invalid_request');
@@ -38,7 +40,7 @@ class Messages extends AOperation
             $datetime->sub(new \DateInterval('PT1H'));
         }
 
-        $result = $this->search($server, $searchCriteria, 0, 1, $timeout, $receivedAfter);
+        $result = $this->search($server, $searchCriteria, 0, 1, $timeout, $receivedAfter, $dir);
         return $this->getById($result->items[0]->id);
     }
 
@@ -83,6 +85,8 @@ class Messages extends AOperation
      * @param int    $page         Used in conjunction with itemsPerPage to support pagination.
      * @param int    $itemsPerPage A limit on the number of results to be returned per page.
      *                             Can be set between 1 and 1000 items, the default is 50.
+     * @param string $dir          Optionally limits results based on the direction (`Sent` or
+     *                             `Received`), with the default being `Received`.
      * @param \DateTime      $receivedAfter  Limits results to only messages received after this date/time.
      *
      * @return MessageListResult
@@ -90,13 +94,14 @@ class Messages extends AOperation
      * @see     https://mailosaur.com/docs/api/#operation/Messages_List List all messages
      * @example https://mailosaur.com/docs/api/#operation/Messages_List
      */
-    public function all($server, $page = 0, $itemsPerPage = 50, \DateTime $receivedAfter = null)
+    public function all($server, $page = 0, $itemsPerPage = 50, \DateTime $receivedAfter = null, $dir = null)
     {
         $path = 'api/messages?' . http_build_query(array(
             'server' => $server,
             'page' => $page,
             'itemsPerPage' => $itemsPerPage,
-            'receivedAfter' => ($receivedAfter != null) ? $receivedAfter->format(\DateTime::ATOM) : null
+            'receivedAfter' => ($receivedAfter != null) ? $receivedAfter->format(\DateTime::ATOM) : null,
+            'dir' => ($dir != null) ? $dir : ''
         ));
 
         $messagesResponse = $this->request($path);
@@ -134,11 +139,13 @@ class Messages extends AOperation
      * @param \DateTime      $receivedAfter  Limits results to only messages received after this date/time.
      * @param bool           $errorOnTimeout When set to false, an error will not be throw if timeout is reached
      *                                       (default: true).
+     * @param string $dir                    Optionally limits results based on the direction (`Sent` or
+     *                                       `Received`), with the default being `Received`.
      *
      * @return MessageListResult
      * @throws MailosaurException
      */
-    public function search($server, SearchCriteria $searchCriteria, $page = 0, $itemsPerPage = 50, $timeout = null, \DateTime $receivedAfter = null, $errorOnTimeout = true)
+    public function search($server, SearchCriteria $searchCriteria, $page = 0, $itemsPerPage = 50, $timeout = null, \DateTime $receivedAfter = null, $errorOnTimeout = true, $dir = null)
     {
         $payload = $searchCriteria->toJsonString();
 
@@ -146,7 +153,8 @@ class Messages extends AOperation
             'server' => $server,
             'page' => $page,
             'itemsPerPage' => $itemsPerPage,
-            'receivedAfter' => ($receivedAfter != null) ? $receivedAfter->format(\DateTime::ATOM) : null
+            'receivedAfter' => ($receivedAfter != null) ? $receivedAfter->format(\DateTime::ATOM) : null,
+            'dir' => ($dir != null) ? $dir : ''
         ));
 
         $pollCount = 0;
