@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [ master ]
   workflow_dispatch:
+  schedule:
+    - cron:  '*/8 * * * *'
 
 concurrency: 
   group: mailosaur-php
