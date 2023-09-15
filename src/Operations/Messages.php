@@ -9,6 +9,8 @@ use Mailosaur\Models\SearchCriteria;
 use Mailosaur\Models\MessageCreateOptions;
 use Mailosaur\Models\MessageForwardOptions;
 use Mailosaur\Models\MessageReplyOptions;
+use Mailosaur\Models\PreviewRequestOptions;
+use Mailosaur\Models\PreviewListResult;
 
 class Messages extends AOperation
 {
@@ -308,5 +310,33 @@ class Messages extends AOperation
         $response = json_decode($response);
 
         return new Message($response);
+    }
+
+    /**
+     * <strong>Generate email previews</strong>
+     * <p>Generates screenshots of an email rendered in the specified email clients.</p>
+     *
+     * @param $id
+     * @param $options
+     *
+     * @return \Mailosaur\Models\PreviewListResult
+     * @throws \Mailosaur\Models\MailosaurException
+     */
+    public function generatePreviews($id, PreviewRequestOptions $options)
+    {
+        $payload = $options->toJsonString();
+
+        $response = $this->request(
+            'api/messages/' . $id . '/previews',
+            array(
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS    => $payload,
+                CURLOPT_HTTPHEADER    => array('Content-Type:application/json', 'Content-Length: ' . strlen($payload))
+            )
+        );
+
+        $response = json_decode($response);
+
+        return new PreviewListResult($response);
     }
 }

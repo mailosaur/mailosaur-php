@@ -36,4 +36,17 @@ class Files extends AOperation
     {
         return $this->request('api/files/email/' . urlencode($id));
     }
+
+    /**
+     * <strong>Download an email preview</strong>
+     *
+     * @param string $id The identifier of the preview to be downloaded.
+     *
+     * @return string
+     * @throws \Mailosaur\Models\MailosaurException
+     */
+    public function getPreview($id)
+    {
+        return $this->request('api/files/previews/' . urlencode($id));
+    }
 }

@@ -9,6 +9,7 @@ use Mailosaur\Operations\Messages;
 use Mailosaur\Operations\Servers;
 use Mailosaur\Operations\Usage;
 use Mailosaur\Operations\Devices;
+use Mailosaur\Operations\Previews;
 
 class MailosaurClient
 {
@@ -36,6 +37,9 @@ class MailosaurClient
     /** @var Operations\Devices */
     public $devices;
 
+    /** @var Operations\Previews */
+    public $previews;
+
 
     public function __construct($apiKey, $baseUri = 'https://mailosaur.com/')
     {
@@ -54,6 +58,8 @@ class MailosaurClient
         $this->usage = new Usage($this);
 
         $this->devices = new Devices($this);
+
+        $this->previews = new Previews($this);
     }
 
     /**
