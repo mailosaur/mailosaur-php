@@ -42,7 +42,7 @@ class Messages extends AOperation
             $datetime->sub(new \DateInterval('PT1H'));
         }
 
-        $result = $this->search($server, $searchCriteria, 0, 1, $timeout, $receivedAfter, $dir);
+        $result = $this->search($server, $searchCriteria, 0, 1, $timeout, $receivedAfter, true, $dir);
         return $this->getById($result->items[0]->id);
     }
 
@@ -208,7 +208,7 @@ class Messages extends AOperation
                     return $result;
                 }
 
-                throw new MailosaurException("No matching messages found in time. By default, only messages received in the last hour are checked (use receivedAfter to override this).", "search_timeout");
+                throw new MailosaurException("No matching messages found in time. By default, only messages received in the last hour are checked (use receivedAfter to override this). The search criteria used for this query was [".$payload."] which timed out after ".$timeout."ms", "search_timeout");
             }
 
             sleep($delay / 1000);
