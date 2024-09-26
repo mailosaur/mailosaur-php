@@ -10,6 +10,7 @@ namespace Mailosaur\Operations;
 
 
 use Mailosaur\Models\SpamAnalysisResult;
+use Mailosaur\Models\DeliverabilityReport;
 
 class Analysis extends AOperation
 {
@@ -30,5 +31,23 @@ class Analysis extends AOperation
         $response = json_decode($response);
 
         return new SpamAnalysisResult($response);
+    }
+
+    /**
+     * <strong>Perform a deliverability report</strong>
+     *
+     * @param string $email The identifier of the email to be analyzed.
+     *
+     * @return DeliverabilityReport
+     * @throws \Mailosaur\Models\MailosaurException
+     * @see     https://mailosaur.com/docs/api/analysis Perform a deliverability test docs
+     * @example https://mailosaur.com/docs/api/analysis
+     */
+    public function deliverability($email)
+    {
+        $response = $this->request('api/analysis/deliverability/' . urlencode($email));
+
+        $response = json_decode($response);
+        return new DeliverabilityReport($response);
     }
 }

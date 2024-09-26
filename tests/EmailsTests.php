@@ -211,6 +211,44 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testDeliverabilityReport()
+    {
+        $targetId = self::$emails[0]->id;
+
+        $result = self::$client->analysis->deliverability($targetId);
+
+        $this->assertNotNull($result);
+
+        $this->assertNotNull($result->spf);
+
+        $this->assertNotNull($result->dkim);
+        foreach ($result->dkim as $dkim) {
+            $this->assertNotNull($dkim);
+        }
+
+        $this->assertNotNull($result->dmarc);
+        
+        $this->assertNotNull($result->blockLists);
+        foreach ($result->blockLists as $blockList) {
+            $this->assertNotNull($blockList);
+            $this->assertNotNull($blockList->id);
+            $this->assertNotNull($blockList->name);
+        }
+
+        $this->assertNotNull($result->content);
+
+        $this->assertNotNull($result->dnsRecords);
+        $this->assertNotNull($result->dnsRecords->a);
+        $this->assertNotNull($result->dnsRecords->mx);
+        $this->assertNotNull($result->dnsRecords->ptr);
+
+        $this->assertNotNull($result->spamAssassin);
+        foreach ($result->spamAssassin->rules as $rule) {
+            $this->assertNotEmpty($rule->rule);
+            $this->assertNotEmpty($rule->description);
+        }
+    }
+
     public function testDelete()
     {
         $targetEmailId = self::$emails[4]->id;
