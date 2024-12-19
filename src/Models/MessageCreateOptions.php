@@ -11,6 +11,11 @@ class MessageCreateOptions
     public $to = null;
 
     /**
+     * @var string The email address to which the email will be CC'd.
+     */
+    public $cc = null;
+
+    /**
      * @var string Partially overrides of the message's 'from' address. This **must** be an address ending 
      * with `YOUR_SERVER.mailosaur.net`, such as `my-emails @a1bcdef2.mailosaur.net`.
      */
@@ -45,6 +50,7 @@ class MessageCreateOptions
     {
         return array(
             'to'  => $this->to,
+            'cc'  => $this->cc,
             'from'  => $this->from,
             'send'  => $this->send,
             'subject' => $this->subject,
