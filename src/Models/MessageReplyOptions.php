@@ -6,6 +6,11 @@ namespace Mailosaur\Models;
 class MessageReplyOptions
 {
     /**
+     * @var string The email address to which the email will be CC'd.
+     */
+    public $cc = null;
+
+    /**
      * @var string Any additional plain text content to include in the reply. Note that only text or html can be supplied, not both.
      */
     public $text = null;
@@ -23,6 +28,7 @@ class MessageReplyOptions
     public function __toArray()
     {
         return array(
+            'cc'  => $this->cc,
             'text'    => $this->text,
             'html'    => $this->html,
             'attachments'    => $this->attachments,

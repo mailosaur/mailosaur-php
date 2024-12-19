@@ -11,6 +11,11 @@ class MessageForwardOptions
     public $to = null;
 
     /**
+     * @var string The email address to which the email will be CC'd.
+     */
+    public $cc = null;
+
+    /**
      * @var string Any additional plain text content to forward the email with. Note that only text or html can be supplied, not both.
      */
     public $text = null;
@@ -24,6 +29,7 @@ class MessageForwardOptions
     {
         return array(
             'to'  => $this->to,
+            'cc'  => $this->cc,
             'text'    => $this->text,
             'html'    => $this->html,
         );

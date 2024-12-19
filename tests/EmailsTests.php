@@ -303,6 +303,27 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->assertEquals($subject, $message->subject);
     }
 
+    public function testCreateWithCc()
+    {
+        if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
+
+        $subject = "CC message";
+        $ccRecipient = 'someoneelse@' . self::$verifiedDomain;
+
+        $options = new MessageCreateOptions();
+        $options->to = 'anything@' . self::$verifiedDomain;
+        $options->cc = $ccRecipient;
+        $options->send = TRUE;
+        $options->subject = $subject;
+        $options->html = '<p>This is a new email.</p>';
+
+        $message = self::$client->messages->create(self::$server, $options);
+        $this->assertNotNull($message->id);
+        $this->assertEquals($subject, $message->subject);
+        $this->assertCount(1, $message->cc);
+        $this->assertEquals($ccRecipient, $message->cc[0]->email);
+    }
+
     public function testCreateSendWithAttachment()
     {
         if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
@@ -370,6 +391,27 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
         $this->assertNotFalse(strpos($message->html->body, $body));
     }
 
+    public function testForwardWithCc()
+    {
+        if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
+
+        $body = "<p>Forwarded <strong>HTML</strong> message.</p>";
+        $targetEmailId = self::$emails[0]->id;
+        $ccRecipient = 'someoneelse@' . self::$verifiedDomain;
+
+        $options = new MessageForwardOptions();
+        $options->to = 'forwardcc@' . self::$verifiedDomain;
+        $options->cc = $ccRecipient;
+        $options->html = $body;
+
+        $message = self::$client->messages->forward($targetEmailId, $options);
+
+        $this->assertNotNull($message->id);
+        $this->assertNotFalse(strpos($message->html->body, $body));
+        $this->assertCount(1, $message->cc);
+        $this->assertEquals($ccRecipient, $message->cc[0]->email);
+    }
+
     public function testReplyText()
     {
         if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
@@ -400,6 +442,26 @@ class EmailsTests extends \PHPUnit\Framework\TestCase
 
         $this->assertNotNull($message->id);
         $this->assertNotFalse(strpos($message->html->body, $body));
+    }
+
+    public function testReplyWithCc()
+    {
+        if (empty(self::$verifiedDomain)) { $this->markTestSkipped(); }
+
+        $body = "<p>Reply <strong>HTML</strong> message.</p>";
+        $ccRecipient = 'someoneelse@' . self::$verifiedDomain;
+        $targetEmailId = self::$emails[0]->id;
+
+        $options = new MessageReplyOptions();
+        $options->cc = $ccRecipient;
+        $options->html = $body;
+
+        $message = self::$client->messages->reply($targetEmailId, $options);
+
+        $this->assertNotNull($message->id);
+        $this->assertNotFalse(strpos($message->html->body, $body));
+        $this->assertCount(1, $message->cc);
+        $this->assertEquals($ccRecipient, $message->cc[0]->email);
     }
 
     public function testReplyWithAttachment()
