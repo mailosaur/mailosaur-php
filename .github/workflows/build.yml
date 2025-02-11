@@ -2,12 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
-concurrency: 
+concurrency:
   group: mailosaur-php
   cancel-in-progress: true
 
@@ -26,35 +26,35 @@ jobs:
       MAILOSAUR_PREVIEWS_SERVER: ${{ secrets.MAILOSAUR_PREVIEWS_SERVER }}
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate
-      
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v2
-      with:
-        path: vendor
-        key: ${{ runner.os }}-node-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+      - name: Validate composer.json and composer.lock
+        run: composer validate
 
-    - name: Install dependencies
-      if: steps.composer-cache.outputs.cache-hit != 'true'
-      run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-node-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
-    - name: Run test suite
-      run: composer run-script test
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Notify on Failure
-      uses: skitionek/notify-microsoft-teams@master
-      if: ${{ failure() }}
-      with:
-        webhook_url: ${{ secrets.TEAMS_BUILDS_WEBHOOK }}
-        needs: ${{ toJson(needs) }}
-        job: ${{ toJson(job) }}
-        overwrite: "{ title: `${workflow} failed for ${repository.name}` }"
+      - name: Run test suite
+        run: composer run-script test
+
+      - name: Notify on Failure
+        uses: skitionek/notify-microsoft-teams@master
+        if: ${{ failure() }}
+        with:
+          webhook_url: ${{ secrets.TEAMS_BUILDS_WEBHOOK }}
+          needs: ${{ toJson(needs) }}
+          job: ${{ toJson(job) }}
+          overwrite: "{ title: `${workflow} failed for ${repository.name}` }"
 
   build-next:
     if: ${{ always() }}
@@ -72,32 +72,32 @@ jobs:
       MAILOSAUR_PREVIEWS_SERVER: ${{ secrets.MAILOSAUR_PREVIEWS_SERVER }}
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate
-      
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v2
-      with:
-        path: vendor
-        key: ${{ runner.os }}-node-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+      - name: Validate composer.json and composer.lock
+        run: composer validate
 
-    - name: Install dependencies
-      if: steps.composer-cache.outputs.cache-hit != 'true'
-      run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-node-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
-    - name: Run test suite
-      run: composer run-script test
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Notify on Failure
-      uses: skitionek/notify-microsoft-teams@master
-      if: ${{ failure() }}
-      with:
-        webhook_url: ${{ secrets.TEAMS_BUILDS_WEBHOOK }}
-        needs: ${{ toJson(needs) }}
-        job: ${{ toJson(job) }}
-        overwrite: "{ title: `${workflow} failed for ${repository.name}` }"
+      - name: Run test suite
+        run: composer run-script test
+
+      - name: Notify on Failure
+        uses: skitionek/notify-microsoft-teams@master
+        if: ${{ failure() }}
+        with:
+          webhook_url: ${{ secrets.TEAMS_BUILDS_WEBHOOK }}
+          needs: ${{ toJson(needs) }}
+          job: ${{ toJson(job) }}
+          overwrite: "{ title: `${workflow} failed for ${repository.name}` }"
