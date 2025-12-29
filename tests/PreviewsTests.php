@@ -6,7 +6,6 @@ namespace MailosaurTest;
 use Mailosaur\MailosaurClient;
 use Mailosaur\Operations\Servers;
 use Mailosaur\Models\SearchCriteria;
-use Mailosaur\Models\PreviewRequest;
 use Mailosaur\Models\PreviewRequestOptions;
 
 class PreviewsTests extends \PHPUnit\Framework\TestCase
@@ -23,7 +22,7 @@ class PreviewsTests extends \PHPUnit\Framework\TestCase
         $apiKey       = getenv('MAILOSAUR_API_KEY');
         self::$server = getenv('MAILOSAUR_SERVER');
 
-        if (empty($apiKey)) {
+        if (empty($apiKey) || empty(self::$server)) {
             throw new \Exception('Missing necessary environment variables - refer to README.md');
         }
 
@@ -39,8 +38,6 @@ class PreviewsTests extends \PHPUnit\Framework\TestCase
 
     public function testGeneratePreviews()
     {
-        if (empty(self::$server)) { $this->markTestSkipped(); }
-
         $randomString = Servers::randomString(10);
         $host             = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.net';
         $testEmailAddress = $randomString . '@' . self::$server . '.' . $host;
@@ -52,8 +49,7 @@ class PreviewsTests extends \PHPUnit\Framework\TestCase
 
         $email = self::$client->messages->get(self::$server, $criteria);
 
-        $request = new PreviewRequest('OL2021');
-        $options = new PreviewRequestOptions(array($request));
+        $options = new PreviewRequestOptions(array('iphone-16plus-applemail-lightmode-portrait'));
 
         $result = self::$client->messages->generatePreviews($email->id, $options);
         $this->assertTrue(count($result->items) > 0);

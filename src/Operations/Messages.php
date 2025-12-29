@@ -327,7 +327,7 @@ class Messages extends AOperation
         $payload = $options->toJsonString();
 
         $response = $this->request(
-            'api/messages/' . $id . '/previews',
+            'api/messages/' . $id . '/screenshots',
             array(
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS    => $payload,

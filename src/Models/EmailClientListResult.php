@@ -3,10 +3,10 @@
 namespace Mailosaur\Models;
 
 
-class PreviewEmailClientListResult
+class EmailClientListResult
 {
     /**
-     * @var PreviewEmailClient[] A list of available email clients with which to generate email previews.
+     * @var EmailClient[] A list of available email clients with which to generate email previews.
      */
     public $items = array();
 
@@ -14,7 +14,7 @@ class PreviewEmailClientListResult
     {
         if (property_exists($data, 'items') && is_array($data->items)) {
             foreach ($data->items as $item) {
-                $this->items[] = new PreviewEmailClient($item);
+                $this->items[] = new EmailClient($item);
             }
         }
     }
