@@ -6,19 +6,19 @@ namespace Mailosaur\Models;
 class PreviewRequestOptions
 {
     /**
-     * @var PreviewRequest[] The list of email preview requests.
+     * @var string[] The list email clients to generate previews with.
      */
-    public $previews = array();
+    public $emailClients = array();
 
-    public function __construct($previews)
+    public function __construct($emailClients)
     {
-        $this->previews = $previews;
+        $this->emailClients = $emailClients;
     }
 
     public function __toArray()
     {
         $model = array(
-            'previews'      => $this->previews
+            'emailClients' => $this->emailClients
         );
 
         return $model;
