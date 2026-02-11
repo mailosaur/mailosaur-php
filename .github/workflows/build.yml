@@ -11,21 +11,32 @@ concurrency:
   group: mailosaur-php
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build (${{ matrix.environment }})
+    runs-on: ${{ vars.LINUX }}
     timeout-minutes: 10
 
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        environment: [live, next]
+
     env:
-      MAILOSAUR_BASE_URL: https://mailosaur.com/
-      MAILOSAUR_SMTP_HOST: mailosaur.net
+      MAILOSAUR_BASE_URL: ${{ matrix.environment == 'live' && 'https://mailosaur.com/' || 'https://next.mailosaur.com/' }}
+      MAILOSAUR_SMTP_HOST: ${{ matrix.environment == 'live' && 'mailosaur.net' || 'mailosaur.email' }}
       MAILOSAUR_SMTP_PORT: 2525
       MAILOSAUR_API_KEY: ${{ secrets.MAILOSAUR_API_KEY }}
       MAILOSAUR_SERVER: ${{ secrets.MAILOSAUR_SERVER }}
       MAILOSAUR_VERIFIED_DOMAIN: ${{ secrets.MAILOSAUR_VERIFIED_DOMAIN }}
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
       - name: Validate composer.json and composer.lock
         run: composer validate
@@ -46,56 +57,25 @@ jobs:
       - name: Run test suite
         run: composer run-script test
 
-      - name: Notify on Failure
-        uses: skitionek/notify-microsoft-teams@master
-        if: ${{ failure() }}
-        with:
-          webhook_url: ${{ secrets.TEAMS_BUILDS_WEBHOOK }}
-          needs: ${{ toJson(needs) }}
-          job: ${{ toJson(job) }}
-          overwrite: "{ title: `${workflow} failed for ${repository.name}` }"
-
-  build-next:
+  notify:
+    name: Notify
     if: ${{ always() }}
     needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    env:
-      MAILOSAUR_BASE_URL: https://next.mailosaur.com/
-      MAILOSAUR_SMTP_HOST: mailosaur.email
-      MAILOSAUR_SMTP_PORT: 2525
-      MAILOSAUR_API_KEY: ${{ secrets.MAILOSAUR_API_KEY }}
-      MAILOSAUR_SERVER: ${{ secrets.MAILOSAUR_SERVER }}
-      MAILOSAUR_VERIFIED_DOMAIN: ${{ secrets.MAILOSAUR_VERIFIED_DOMAIN }}
+    runs-on: ${{ vars.LINUX }}
+    timeout-minutes: 5
 
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Validate composer.json and composer.lock
-        run: composer validate
-
-      - name: Cache Composer packages
-        id: composer-cache
-        uses: actions/cache@v4
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Checkout custom actions
+        uses: actions/checkout@v4
         with:
-          path: vendor
-          key: ${{ runner.os }}-node-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          repository: mailosaur/actions
+          token: ${{ secrets.CUSTOM_ACTIONS_TOKEN }}
+          path: .github/actions
 
-      - name: Install dependencies
-        if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress --no-suggest
-
-      - name: Run test suite
-        run: composer run-script test
-
-      - name: Notify on Failure
-        uses: skitionek/notify-microsoft-teams@master
-        if: ${{ failure() }}
+      - name: Send notifications
+        uses: ./.github/actions/notify
         with:
-          webhook_url: ${{ secrets.TEAMS_BUILDS_WEBHOOK }}
-          needs: ${{ toJson(needs) }}
-          job: ${{ toJson(job) }}
-          overwrite: "{ title: `${workflow} failed for ${repository.name}` }"
+          webhook-url: ${{ secrets.NOTIFICATION_URL }}
+          data: '{"matrixBuildResult": "${{ needs.build.result }}"}'
