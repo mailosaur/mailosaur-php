@@ -11,6 +11,10 @@ Mailosaur lets you automate email and SMS tests as part of software development 
 This guide provides several key sections:
 
   - [Get Started](#get-started)
+  - [Installation](#installation)
+  - [Set your API key](#set-your-api-key)
+  - [Create your code](#create-your-code)
+  - [API Reference](#api-reference)
   - [Creating an account](#creating-an-account)
   - [Test email addresses with Mailosaur](#test-email-addresses-with-mailosaur)
   - [Find an email](#find-an-email)
@@ -38,6 +42,22 @@ To use the client library, use Composer's autoload:
 
 ```
 require_once('vendor/autoload.php');
+```
+
+### Set your API key
+
+Get your API key from the [Mailosaur Dashboard](https://mailosaur.com/app/project/api) and set it as an environment variable:
+
+```sh
+export MAILOSAUR_API_KEY='your-api-key-here'
+```
+
+### Create your code
+
+Then import the library into your code:
+
+```php
+$mailosaur = new MailosaurClient();
 ```
 
 ### API Reference
@@ -85,7 +105,7 @@ require_once('vendor/autoload.php');
 use Mailosaur\MailosaurClient;
 use Mailosaur\Models\SearchCriteria;
 
-$mailosaur = new MailosaurClient('API_KEY');
+$mailosaur = new MailosaurClient();
 
 // See https://mailosaur.com/app/project/api
 $serverId = 'abc123';
@@ -103,7 +123,7 @@ print($email->subject); // "Hello world!"
 
 ### What is this code doing?
 
-1. Sets up an instance of `MailosaurClient` with your API key.
+1. Sets up an instance of `MailosaurClient` using the `MAILOSAUR_API_KEY` environment variable.
 2. Waits for an email to arrive at the server with ID `abc123`.
 3. Outputs the subject line of the email.
 
@@ -121,7 +141,7 @@ require_once('vendor/autoload.php');
 use Mailosaur\MailosaurClient;
 use Mailosaur\Models\SearchCriteria;
 
-$mailosaur = new MailosaurClient('API_KEY');
+$mailosaur = new MailosaurClient();
 
 // See https://mailosaur.com/app/project/api
 $serverId = 'abc123';
