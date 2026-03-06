@@ -41,9 +41,18 @@ class MailosaurClient
     public $previews;
 
 
-    public function __construct($apiKey, $baseUri = 'https://mailosaur.com/')
+    public function __construct($apiKey = null, $baseUri = 'https://mailosaur.com/')
     {
-        $this->setApiKey($apiKey);
+        $resolvedApiKey = $apiKey ?: getenv('MAILOSAUR_API_KEY');
+
+        if (empty($resolvedApiKey)) {
+            throw new Models\MailosaurException(
+                "'apiKey' must be set via the MAILOSAUR_API_KEY environment variable, or passed to the MailosaurClient constructor.",
+                'missing_api_key'
+            );
+        }
+
+        $this->setApiKey($resolvedApiKey);
 
         $this->setBaseUri($baseUri);
 
