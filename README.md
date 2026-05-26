@@ -10,21 +10,32 @@ Mailosaur lets you automate email and SMS tests as part of software development 
 
 This guide provides several key sections:
 
+- [Mailosaur - PHP library · ](#mailosaur---php-library--)
   - [Get Started](#get-started)
-  - [Installation](#installation)
-  - [Set your API key](#set-your-api-key)
-  - [Create your code](#create-your-code)
-  - [API Reference](#api-reference)
+    - [Installation](#installation)
+    - [Set your API key](#set-your-api-key)
+    - [Create your code](#create-your-code)
+    - [API Reference](#api-reference)
   - [Creating an account](#creating-an-account)
   - [Test email addresses with Mailosaur](#test-email-addresses-with-mailosaur)
   - [Find an email](#find-an-email)
+    - [What is this code doing?](#what-is-this-code-doing)
+    - [My email wasn't found](#my-email-wasnt-found)
   - [Find an SMS message](#find-an-sms-message)
   - [Testing plain text content](#testing-plain-text-content)
+    - [Extracting verification codes from plain text](#extracting-verification-codes-from-plain-text)
   - [Testing HTML content](#testing-html-content)
+    - [Working with HTML using DOMDocument](#working-with-html-using-domdocument)
   - [Working with hyperlinks](#working-with-hyperlinks)
+    - [Links in plain text (including SMS messages)](#links-in-plain-text-including-sms-messages)
   - [Working with attachments](#working-with-attachments)
+    - [Writing an attachment to disk](#writing-an-attachment-to-disk)
   - [Working with images and web beacons](#working-with-images-and-web-beacons)
+    - [Remotely-hosted images](#remotely-hosted-images)
+    - [Triggering web beacons](#triggering-web-beacons)
   - [Spam checking](#spam-checking)
+  - [Development](#development)
+  - [Contacting us](#contacting-us)
 
 You can find the full [Mailosaur documentation](https://mailosaur.com/docs/) on the website.
 
@@ -34,13 +45,13 @@ If you get stuck, just contact us at support@mailosaur.com.
 
 You can install the bindings via Composer. Run the following command:
 
-```
+```sh
 composer require mailosaur/mailosaur
 ```
 
 To use the client library, use Composer's autoload:
 
-```
+```php
 require_once('vendor/autoload.php');
 ```
 
@@ -54,9 +65,11 @@ export MAILOSAUR_API_KEY='your-api-key-here'
 
 ### Create your code
 
-Then import the library into your code:
+Now import the library and create a client:
 
 ```php
+use Mailosaur\MailosaurClient;
+
 $mailosaur = new MailosaurClient();
 ```
 
@@ -65,7 +78,7 @@ $mailosaur = new MailosaurClient();
 This library is powered by the Mailosaur [email & SMS testing API](https://mailosaur.com/docs/api/). You can easily check out the API itself by looking at our [API reference documentation](https://mailosaur.com/docs/api/) or via our Postman or Insomnia collections:
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/6961255-6cc72dff-f576-451a-9023-b82dec84f95d?action=collection%2Ffork&collection-url=entityId%3D6961255-6cc72dff-f576-451a-9023-b82dec84f95d%26entityType%3Dcollection%26workspaceId%3D386a4af1-4293-4197-8f40-0eb49f831325)
- [![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=Mailosaur&uri=https%3A%2F%2Fmailosaur.com%2Finsomnia.json)
+ [![Run in Insomnia](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=Mailosaur&uri=https%3A%2F%2Fmailosaur.com%2Finsomnia.json)
 
 ## Creating an account
 
@@ -123,9 +136,25 @@ print($email->subject); // "Hello world!"
 
 ### What is this code doing?
 
-1. Sets up an instance of `MailosaurClient` using the `MAILOSAUR_API_KEY` environment variable.
+1. Sets up an instance of `MailosaurClient`, reading the API key from the `MAILOSAUR_API_KEY` environment variable.
 2. Waits for an email to arrive at the server with ID `abc123`.
 3. Outputs the subject line of the email.
+
+### My email wasn't found
+
+First, check that the email you sent is visible in the [Mailosaur Dashboard](https://mailosaur.com/app/project/messages).
+
+If it is, the likely reason is that by default, `messages->get` only searches emails received by Mailosaur in the last 1 hour. You can override this behavior (see the `receivedAfter` argument below), however we only recommend doing this during setup, as your tests will generally run faster with the default settings:
+
+```php
+$email = $mailosaur->messages->get(
+    $serverId,
+    $criteria,
+    10000,
+    // Override receivedAfter to search all messages since Jan 1st
+    new \DateTime('2021-01-01')
+);
+```
 
 ## Find an SMS message
 
@@ -177,7 +206,7 @@ Here is how to extract a 6-digit numeric code:
 ```php
 print($message->text->body); // "Your access code is 243546."
 
-preg_match('/([0-9]){6}/', $message->text->body, $matches);
+preg_match('/([0-9]{6})/', $message->text->body, $matches);
 print($matches[0]); // "243546"
 ```
 
@@ -191,16 +220,16 @@ Most emails also have an HTML body, as well as the plain text content. You can a
 print($message->html->body); // "<html><head ..."
 ```
 
-### Working with HTML
+### Working with HTML using DOMDocument
 
-If you need to traverse the HTML content of an email. For example, finding an element via a CSS selector, you can do this natively in PHP:
+If you need to traverse the HTML content of an email — for example, finding an element via a CSS selector — you can do this natively in PHP using `DOMDocument` and `DOMXPath`.
 
 ```php
 $doc = new DOMDocument();
 $doc->loadHTML($message->html->body);
 
 $cssClass = 'verification-code';
-$xpath = new DomXPath($doc);
+$xpath = new DOMXPath($doc);
 $matches = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $cssClass ')]");
 
 $verificationCode = $matches[0]->textContent;
@@ -225,7 +254,7 @@ print($firstLink->text); // "Google Search"
 print($firstLink->href); // "https://www.google.com/"
 ```
 
-**Important:** To ensure you always have valid emails. Mailosaur only extracts links that have been correctly marked up with `<a>` or `<area>` tags.
+**Important:** To ensure you always have valid emails, Mailosaur only extracts links that have been correctly marked up with `<a>` or `<area>` tags.
 
 ### Links in plain text (including SMS messages)
 
@@ -261,6 +290,15 @@ The `length` property returns the size of the attached file (in bytes):
 ```php
 $firstAttachment = $message->attachments[0];
 print($firstAttachment->length); // 4028
+```
+
+### Writing an attachment to disk
+
+```php
+$firstAttachment = $message->attachments[1];
+
+$fileBytes = $mailosaur->files->getAttachment($firstAttachment->id);
+file_put_contents($firstAttachment->fileName, $fileBytes);
 ```
 
 ## Working with images and web beacons
@@ -347,3 +385,5 @@ composer run-script test
 ## Contacting us
 
 You can get us at [support@mailosaur.com](mailto:support@mailosaur.com)
+</content>
+</invoke>
