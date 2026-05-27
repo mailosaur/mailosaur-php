@@ -57,7 +57,7 @@ require_once('vendor/autoload.php');
 
 ### Set your API key
 
-Get your API key from the [Mailosaur Dashboard](https://mailosaur.com/app/project/api) and set it as an environment variable:
+Get your API key from the [Mailosaur Dashboard](https://mailosaur.com/app/keys) and set it as an environment variable:
 
 ```sh
 export MAILOSAUR_API_KEY='your-api-key-here'
@@ -84,11 +84,11 @@ This library is powered by the Mailosaur [email & SMS testing API](https://mailo
 
 Create a [free trial account](https://mailosaur.com/app/signup) for Mailosaur via the website.
 
-Once you have this, navigate to the [API tab](https://mailosaur.com/app/project/api) to find the following values:
+To start testing you'll need three things:
 
-- **Server ID** - Inboxes (servers) act like projects, which group your tests together. You need this ID whenever you interact with an inbox (server) via the API.
-- **Server Domain** - Every inbox (server) has its own domain name. You'll need this to send email to your inbox (server).
-- **API Key** - You can create an API key per inbox (server) — recommended — or an account-level API key to use across your whole account. [Learn more about API keys](https://mailosaur.com/docs/managing-your-account/api-keys/).
+- **API key** - [manage API keys within the Mailosaur Dashboard](https://mailosaur.com/app/keys). You can scope a key to a single inbox (server) — recommended — or create an account-level key. [Learn more about API keys](https://mailosaur.com/docs/managing-your-account/api-keys/).
+- **Inbox (server) domain** - open [your inbox](https://mailosaur.com/app/servers/default) (server) within the Mailosaur Dashboard to see its domain name (e.g. `abc123.mailosaur.net`). You'll need this to send email to the inbox (server).
+- **Inbox (server) ID** - the first part of the inbox (server) domain. For `abc123.mailosaur.net` the ID is `abc123`. You need this whenever you interact with the inbox (server) via the API.
 
 ## Test email addresses with Mailosaur
 
@@ -97,7 +97,7 @@ Mailosaur gives you an **unlimited number of test email addresses** - with no se
 Here's how it works:
 
 * When you create an account, you are given an inbox (server).
-* Every inbox (server) has its own **Server Domain** name (e.g. `abc123.mailosaur.net`)
+* Every inbox (server) has its own domain name (e.g. `abc123.mailosaur.net`)
 * Any email address that ends with `@{YOUR_SERVER_DOMAIN}` will work with Mailosaur without any special setup. For example:
   * `build-423@abc123.mailosaur.net`
   * `john.smith@abc123.mailosaur.net`
@@ -120,7 +120,6 @@ use Mailosaur\Models\SearchCriteria;
 
 $mailosaur = new MailosaurClient();
 
-// See https://mailosaur.com/app/project/api
 $serverId = 'abc123';
 $serverDomain = 'abc123.mailosaur.net';
 
@@ -172,7 +171,6 @@ use Mailosaur\Models\SearchCriteria;
 
 $mailosaur = new MailosaurClient();
 
-// See https://mailosaur.com/app/project/api
 $serverId = 'abc123';
 
 $criteria = new SearchCriteria();
