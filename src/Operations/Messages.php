@@ -14,7 +14,7 @@ use Mailosaur\Models\PreviewListResult;
 
 /**
  * Operations for finding, retrieving, creating, forwarding, replying to, and deleting the
- * email and SMS messages received by your Mailosaur servers. Accessed via `client->messages`.
+ * email and SMS messages received by your Mailosaur inboxes (servers). Accessed via `client->messages`.
  */
 class Messages extends AOperation
 {
@@ -24,7 +24,7 @@ class Messages extends AOperation
      * search criteria is found. This is the most efficient method of looking up a message,
      * therefore we recommend using it wherever possible.</p>
      *
-     * @param string         $server         The identifier of the server hosting the message.
+     * @param string         $server         The identifier of the inbox (server) hosting the message.
      * @param SearchCriteria $searchCriteria The search criteria to use in order to find a match.
      * @param int            $timeout        Specify how long to wait for a matching result (in milliseconds).
      * @param \DateTime      $receivedAfter  Limits results to only messages received after this date/time.
@@ -94,7 +94,7 @@ class Messages extends AOperation
      * <p>Returns a list of your messages in summary form. The summaries are returned sorted by
      * received date, with the most recently-received messages appearing first.</p>
      *
-     * @param string    $server        The identifier of the server hosting the messages.
+     * @param string    $server        The identifier of the inbox (server) hosting the messages.
      * @param int       $page          Used in conjunction with itemsPerPage to support pagination.
      * @param int       $itemsPerPage  A limit on the number of results to be returned per page.
      *                                 Can be set between 1 and 1000 items, the default is 50.
@@ -126,9 +126,9 @@ class Messages extends AOperation
 
     /**
      * <strong>Delete all messages</strong>
-     * <p>Permanently deletes all messages within a server. This operation cannot be undone.</p>
+     * <p>Permanently deletes all messages within an inbox (server). This operation cannot be undone.</p>
      *
-     * @param string $server The identifier of the server to be emptied.
+     * @param string $server The identifier of the inbox (server) to be emptied.
      *
      * @return void
      * @throws MailosaurException
@@ -145,7 +145,7 @@ class Messages extends AOperation
      * <p>Returns a list of messages matching the specified search criteria, in summary form.
      * The messages are returned sorted by received date, with the most recently-received messages appearing first.</p>
      *
-     * @param string         $server         The identifier of the server hosting the messages.
+     * @param string         $server         The identifier of the inbox (server) hosting the messages.
      * @param SearchCriteria $searchCriteria Search criteria
      * @param int            $page           Used in conjunction with itemsPerPage to support pagination.
      * @param int            $itemsPerPage   A limit on the number of results to be returned per page.
@@ -235,7 +235,7 @@ class Messages extends AOperation
      * useful in scenarios where you want an email to trigger a workflow in your
      * product.</p>
      *
-     * @param string               $server               The unique identifier of the required server.
+     * @param string               $server               The unique identifier of the required inbox (server).
      * @param MessageCreateOptions $messageCreateOptions Options to use when creating a new message.
      *
      * @return \Mailosaur\Models\Message The newly-created message.

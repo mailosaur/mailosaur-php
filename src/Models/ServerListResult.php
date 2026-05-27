@@ -6,7 +6,7 @@ namespace Mailosaur\Models;
 class ServerListResult
 {
     /**
-     * @var Server[] Servers are returned sorted by creation date, with the most recently-created server appearing first.
+     * @var Server[] Inboxes (servers) are returned sorted by creation date, with the most recently-created inbox (server) appearing first.
      */
     public $items = array();
 

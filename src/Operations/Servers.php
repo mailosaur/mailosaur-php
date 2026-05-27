@@ -14,7 +14,7 @@ use Mailosaur\Models\ServerCreateOptions;
 use Mailosaur\Models\ServerListResult;
 
 /**
- * Operations for creating and managing your Mailosaur servers — the virtual inboxes that group
+ * Operations for creating and managing your Mailosaur inboxes (servers) — they group
  * your tests together, each with its own domain and SMTP/POP3/IMAP credentials. Accessed via
  * `client->servers`.
  */
@@ -23,9 +23,9 @@ class Servers extends AOperation
 
     /**
      * <strong>List all servers</strong>
-     * <p>Returns a list of your virtual servers. Servers are returned sorted in alphabetical order.</p>
+     * <p>Returns a list of your inboxes (servers). Inboxes (servers) are returned sorted in alphabetical order.</p>
      *
-     * @return ServerListResult Your servers.
+     * @return ServerListResult Your inboxes (servers).
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Servers_List List all servers
      * @example https://mailosaur.com/docs/api/#operation/Servers_List
@@ -41,11 +41,11 @@ class Servers extends AOperation
 
     /**
      * <strong>Create a server</strong>
-     * <p>Creates a new virtual server and returns it.</p>
+     * <p>Creates a new inbox (server) and returns it.</p>
      *
-     * @param ServerCreateOptions $serverCreateOptions Options used to create a new Mailosaur server.
+     * @param ServerCreateOptions $serverCreateOptions Options used to create a new Mailosaur inbox (server).
      *
-     * @return \Mailosaur\Models\Server The newly-created server.
+     * @return \Mailosaur\Models\Server The newly-created inbox (server).
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Servers_Create Create a server
      * @example https://mailosaur.com/docs/api/#operation/Servers_Create
@@ -70,11 +70,11 @@ class Servers extends AOperation
 
     /**
      * <strong>Retrieve a server</strong>
-     * <p>Retrieves the detail for a single server.</p>
+     * <p>Retrieves the detail for a single inbox (server).</p>
      *
-     * @param string $id The unique identifier of the server to be retrieved.
+     * @param string $id The unique identifier of the inbox (server) to be retrieved.
      *
-     * @return \Mailosaur\Models\Server The server.
+     * @return \Mailosaur\Models\Server The inbox (server).
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Servers_Get Retrieve a server
      * @example https://mailosaur.com/docs/api/#operation/Servers_Get
@@ -90,11 +90,11 @@ class Servers extends AOperation
 
     /**
      * <strong>Retrieve server password</strong>
-     * <p>Retrieves the password for a server. This password can be used for SMTP, POP3, and IMAP connectivity.</p>
+     * <p>Retrieves the password for an inbox (server). This password can be used for SMTP, POP3, and IMAP connectivity.</p>
      *
-     * @param string $id The unique identifier of the server.
+     * @param string $id The unique identifier of the inbox (server).
      *
-     * @return string The server's password.
+     * @return string The password for the inbox (server).
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Servers_Get_Password Retrieve server password
      * @example https://mailosaur.com/docs/api/#operation/Servers_Get_Password
@@ -110,12 +110,12 @@ class Servers extends AOperation
 
     /**
      * <strong>Update a server</strong>
-     * <p>Updates the attributes of a server and returns it.</p>
+     * <p>Updates the attributes of an inbox (server) and returns it.</p>
      *
-     * @param string                   $id     The unique identifier of the server to be updated.
-     * @param \Mailosaur\Models\Server $server The updated server.
+     * @param string                   $id     The unique identifier of the inbox (server) to be updated.
+     * @param \Mailosaur\Models\Server $server The updated inbox (server).
      *
-     * @return \Mailosaur\Models\Server The updated server.
+     * @return \Mailosaur\Models\Server The updated inbox (server).
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Servers_Update Update a server docs
      * @example https://mailosaur.com/docs/api/#operation/Servers_Update
@@ -140,10 +140,10 @@ class Servers extends AOperation
 
     /**
      * <strong>Delete a server</strong>
-     * <p>Permanently deletes a server. This will also delete all messages, associated attachments,
-     * etc. within the server. This operation cannot be undone.</p>
+     * <p>Permanently deletes an inbox (server). This will also delete all messages, associated attachments,
+     * etc. within the inbox (server). This operation cannot be undone.</p>
      *
-     * @param string $id The unique identifier of the server to be deleted.
+     * @param string $id The unique identifier of the inbox (server) to be deleted.
      *
      * @return void
      * @throws \Mailosaur\Models\MailosaurException
@@ -157,12 +157,12 @@ class Servers extends AOperation
 
     /**
      * <strong>Generate a random email address</strong>
-     * <p>Generates a random email address by appending a random string in front of the server's
-     * domain name.</p>
+     * <p>Generates a random email address by appending a random string in front of the
+     * domain name of the inbox (server).</p>
      *
-     * @param string $server The identifier of the server.
+     * @param string $server The identifier of the inbox (server).
      *
-     * @return string A random email address ending in the server's domain.
+     * @return string A random email address ending in the domain of the inbox (server).
      */
     public function generateEmailAddress($server)
     {

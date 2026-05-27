@@ -16,7 +16,7 @@ class MessageSummary
     public $type;
 
     /**
-     * @var string Identifier for the server in which the message is located.
+     * @var string Identifier for the inbox (server) in which the message is located.
      */
     public $server;
 
