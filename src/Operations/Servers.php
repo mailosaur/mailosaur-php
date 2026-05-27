@@ -13,13 +13,19 @@ use Mailosaur\Models\Server;
 use Mailosaur\Models\ServerCreateOptions;
 use Mailosaur\Models\ServerListResult;
 
+/**
+ * Operations for creating and managing your Mailosaur servers — the virtual inboxes that group
+ * your tests together, each with its own domain and SMTP/POP3/IMAP credentials. Accessed via
+ * `client->servers`.
+ */
 class Servers extends AOperation
 {
 
     /**
      * <strong>List all servers</strong>
+     * <p>Returns a list of your virtual servers. Servers are returned sorted in alphabetical order.</p>
      *
-     * @return ServerListResult
+     * @return ServerListResult Your servers.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Servers_List List all servers
      * @example https://mailosaur.com/docs/api/#operation/Servers_List
@@ -35,11 +41,11 @@ class Servers extends AOperation
 
     /**
      * <strong>Create a server</strong>
-     * <p>Creates a new virtual SMTP server and returns it.</p>
+     * <p>Creates a new virtual server and returns it.</p>
      *
-     * @param $serverCreateOptions
+     * @param ServerCreateOptions $serverCreateOptions Options used to create a new Mailosaur server.
      *
-     * @return \Mailosaur\Models\Server
+     * @return \Mailosaur\Models\Server The newly-created server.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Servers_Create Create a server
      * @example https://mailosaur.com/docs/api/#operation/Servers_Create
@@ -64,10 +70,11 @@ class Servers extends AOperation
 
     /**
      * <strong>Retrieve a server</strong>
+     * <p>Retrieves the detail for a single server.</p>
      *
-     * @param string $id The identifier of the server to be retrieved.
+     * @param string $id The unique identifier of the server to be retrieved.
      *
-     * @return \Mailosaur\Models\Server
+     * @return \Mailosaur\Models\Server The server.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Servers_Get Retrieve a server
      * @example https://mailosaur.com/docs/api/#operation/Servers_Get
@@ -83,10 +90,11 @@ class Servers extends AOperation
 
     /**
      * <strong>Retrieve server password</strong>
+     * <p>Retrieves the password for a server. This password can be used for SMTP, POP3, and IMAP connectivity.</p>
      *
-     * @param string $id The identifier of the server.
+     * @param string $id The unique identifier of the server.
      *
-     * @return string
+     * @return string The server's password.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Servers_Get_Password Retrieve server password
      * @example https://mailosaur.com/docs/api/#operation/Servers_Get_Password
@@ -102,12 +110,12 @@ class Servers extends AOperation
 
     /**
      * <strong>Update a server</strong>
-     * <p>Updates a single server and returns it.</p>
+     * <p>Updates the attributes of a server and returns it.</p>
      *
-     * @param string                   $id The identifier of the server to be updated.
-     * @param \Mailosaur\Models\Server $server
+     * @param string                   $id     The unique identifier of the server to be updated.
+     * @param \Mailosaur\Models\Server $server The updated server.
      *
-     * @return \Mailosaur\Models\Server
+     * @return \Mailosaur\Models\Server The updated server.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Servers_Update Update a server docs
      * @example https://mailosaur.com/docs/api/#operation/Servers_Update
@@ -132,9 +140,12 @@ class Servers extends AOperation
 
     /**
      * <strong>Delete a server</strong>
+     * <p>Permanently deletes a server. This will also delete all messages, associated attachments,
+     * etc. within the server. This operation cannot be undone.</p>
      *
-     * @param string $id The identifier of the server to be deleted.
+     * @param string $id The unique identifier of the server to be deleted.
      *
+     * @return void
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Servers_Delete Delete a server
      * @example https://mailosaur.com/docs/api/#operation/Servers_Delete
@@ -144,6 +155,15 @@ class Servers extends AOperation
         $this->request('api/servers/' . urlencode($id), array(CURLOPT_CUSTOMREQUEST => 'DELETE'));
     }
 
+    /**
+     * <strong>Generate a random email address</strong>
+     * <p>Generates a random email address by appending a random string in front of the server's
+     * domain name.</p>
+     *
+     * @param string $server The identifier of the server.
+     *
+     * @return string A random email address ending in the server's domain.
+     */
     public function generateEmailAddress($server)
     {
         $host = ($h = getenv('MAILOSAUR_SMTP_HOST')) ? $h : 'mailosaur.net';

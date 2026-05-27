@@ -12,11 +12,17 @@ use Mailosaur\Models\MessageReplyOptions;
 use Mailosaur\Models\PreviewRequestOptions;
 use Mailosaur\Models\PreviewListResult;
 
+/**
+ * Operations for finding, retrieving, creating, forwarding, replying to, and deleting the
+ * email and SMS messages received by your Mailosaur servers. Accessed via `client->messages`.
+ */
 class Messages extends AOperation
 {
     /**
      * <strong>Retrieve a message using search criteria.</strong>
-     * <p>Returns as soon as a message matching the specified search criteria is found. This is the most efficient method of looking up a message.</p>
+     * <p>Waits for a message to be found, returning as soon as a message matching the specified
+     * search criteria is found. This is the most efficient method of looking up a message,
+     * therefore we recommend using it wherever possible.</p>
      *
      * @param string         $server         The identifier of the server hosting the message.
      * @param SearchCriteria $searchCriteria The search criteria to use in order to find a match.
@@ -25,8 +31,9 @@ class Messages extends AOperation
      * @param string         $dir            Optionally limits results based on the direction (`Sent` or
      *                                       `Received`), with the default being `Received`.
      *
-     * @return Message
-     * @throws MailosaurException
+     * @return Message The first message matching the criteria.
+     * @throws MailosaurException With error type `no_messages_found` if no matching message exists, or
+     *                            `search_timeout` if no matching message arrives before the timeout elapses.
      * @see     https://mailosaur.com/docs/api/#operation/Messages_Get Retrieve a message docs
      * @example https://mailosaur.com/docs/api/#operation/Messages_Get
      */
@@ -48,11 +55,12 @@ class Messages extends AOperation
 
     /**
      * <strong>Retrieves the detail for a single email message.</strong>
-     * <p>Simply supply the unique identifier for the required message.</p>
+     * <p>Must be used in conjunction with either `all` or `search` in order to get the unique
+     * identifier for the required message. Simply supply the unique identifier for the required message.</p>
      *
-     * @param $id string message id
+     * @param string $id The unique identifier of the message to be retrieved.
      *
-     * @return Message
+     * @return Message The full message.
      * @throws MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_Get Retrieve a message by ID docs
      * @example https://mailosaur.com/docs/api/#operation/Messages_Get
@@ -69,8 +77,9 @@ class Messages extends AOperation
      * <strong>Permanently deletes a message.</strong>
      * <p>This operation cannot be undone. Also deletes any attachments related to the message.</p>
      *
-     * @param $id string
+     * @param string $id The identifier of the message to be deleted.
      *
+     * @return void
      * @throws MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_Delete Delete a message docs
      * @example https://mailosaur.com/docs/api/#operation/Messages_Delete
@@ -81,17 +90,19 @@ class Messages extends AOperation
     }
 
     /**
-     * <strong>List all messages</strong><br/>
+     * <strong>List all messages</strong>
+     * <p>Returns a list of your messages in summary form. The summaries are returned sorted by
+     * received date, with the most recently-received messages appearing first.</p>
      *
-     * @param string $server       The identifier of the server hosting the messages.
-     * @param int    $page         Used in conjunction with itemsPerPage to support pagination.
-     * @param int    $itemsPerPage A limit on the number of results to be returned per page.
-     *                             Can be set between 1 and 1000 items, the default is 50.
-     * @param string $dir          Optionally limits results based on the direction (`Sent` or
-     *                             `Received`), with the default being `Received`.
-     * @param \DateTime      $receivedAfter  Limits results to only messages received after this date/time.
+     * @param string    $server        The identifier of the server hosting the messages.
+     * @param int       $page          Used in conjunction with itemsPerPage to support pagination.
+     * @param int       $itemsPerPage  A limit on the number of results to be returned per page.
+     *                                 Can be set between 1 and 1000 items, the default is 50.
+     * @param \DateTime $receivedAfter Limits results to only messages received after this date/time.
+     * @param string    $dir           Optionally limits results based on the direction (`Sent` or
+     *                                 `Received`), with the default being `Received`.
      *
-     * @return MessageListResult
+     * @return MessageListResult The message summaries.
      * @throws MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_List List all messages
      * @example https://mailosaur.com/docs/api/#operation/Messages_List
@@ -115,9 +126,11 @@ class Messages extends AOperation
 
     /**
      * <strong>Delete all messages</strong>
+     * <p>Permanently deletes all messages within a server. This operation cannot be undone.</p>
      *
      * @param string $server The identifier of the server to be emptied.
      *
+     * @return void
      * @throws MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_DeleteAll Delete all messages
      * @example https://mailosaur.com/docs/api/#operation/Messages_DeleteAll
@@ -144,8 +157,9 @@ class Messages extends AOperation
      * @param string $dir                    Optionally limits results based on the direction (`Sent` or
      *                                       `Received`), with the default being `Received`.
      *
-     * @return MessageListResult
-     * @throws MailosaurException
+     * @return MessageListResult The matching message summaries.
+     * @throws MailosaurException With error type `search_timeout` if no matching message is found before the
+     *                            timeout elapses, unless `$errorOnTimeout` is set to false.
      */
     public function search($server, SearchCriteria $searchCriteria, $page = 0, $itemsPerPage = 50, $timeout = null, \DateTime $receivedAfter = null, $errorOnTimeout = true, $dir = null)
     {
@@ -217,14 +231,14 @@ class Messages extends AOperation
 
     /**
      * <strong>Create a message</strong>
-     * <p>Creates a new message that can be sent to a verified email address. This is 
+     * <p>Creates a new message that can be sent to a verified email address. This is
      * useful in scenarios where you want an email to trigger a workflow in your
      * product.</p>
      *
-     * @param $server
-     * @param $messageCreateOptions
+     * @param string               $server               The unique identifier of the required server.
+     * @param MessageCreateOptions $messageCreateOptions Options to use when creating a new message.
      *
-     * @return \Mailosaur\Models\Message
+     * @return \Mailosaur\Models\Message The newly-created message.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_Create Create a message
      * @example https://mailosaur.com/docs/api/#operation/Messages_Create
@@ -253,12 +267,13 @@ class Messages extends AOperation
 
     /**
      * <strong>Forward an email</strong>
-     * <p>Forwards the specified email to a verified email address.</p>
+     * <p>Forwards the specified email to a verified email address. This is useful for simulating
+     * a user forwarding one of your email messages.</p>
      *
-     * @param $id
-     * @param $messageForwardOptions
+     * @param string                $id                    The unique identifier of the message to be forwarded.
+     * @param MessageForwardOptions $messageForwardOptions Options to use when forwarding a message.
      *
-     * @return \Mailosaur\Models\Message
+     * @return \Mailosaur\Models\Message The forwarded message.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_Forward Forward an email
      * @example https://mailosaur.com/docs/api/#operation/Messages_Forward
@@ -283,13 +298,13 @@ class Messages extends AOperation
 
     /**
      * <strong>Reply to an email</strong>
-     * <p>Sends a reply to the specified email. This is useful for when 
-     * simulating a user replying to one of your emails.</p>
+     * <p>Sends a reply to the specified message. This is useful for when
+     * simulating a user replying to one of your email or SMS messages.</p>
      *
-     * @param $id
-     * @param $messageReplyOptions
+     * @param string              $id                  The unique identifier of the message to be replied to.
+     * @param MessageReplyOptions $messageReplyOptions Options to use when replying to a message.
      *
-     * @return \Mailosaur\Models\Message
+     * @return \Mailosaur\Models\Message The reply message.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Messages_Reply Reply to an email
      * @example https://mailosaur.com/docs/api/#operation/Messages_Reply
@@ -316,10 +331,10 @@ class Messages extends AOperation
      * <strong>Generate email previews</strong>
      * <p>Generates screenshots of an email rendered in the specified email clients.</p>
      *
-     * @param $id
-     * @param $options
+     * @param string                $id      The identifier of the email to preview.
+     * @param PreviewRequestOptions $options The options with which to generate previews.
      *
-     * @return \Mailosaur\Models\PreviewListResult
+     * @return \Mailosaur\Models\PreviewListResult The generated previews.
      * @throws \Mailosaur\Models\MailosaurException
      */
     public function generatePreviews($id, PreviewRequestOptions $options)

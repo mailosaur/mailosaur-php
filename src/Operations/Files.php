@@ -4,14 +4,19 @@ namespace Mailosaur\Operations;
 
 use Mailosaur\Models\MailosaurException;
 
+/**
+ * Operations for downloading the raw content associated with a message — file attachments, the
+ * full EML source of an email, and rendered email previews. Accessed via `client->files`.
+ */
 class Files extends AOperation
 {
     /**
      * <strong>Download an attachment</strong>
+     * <p>Downloads a single attachment.</p>
      *
      * @param string $id The identifier of the attachment to be downloaded.
      *
-     * @return string
+     * @return string The attachment's binary content.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Files_GetAttachment Download an attachment documentation
      * @example https://mailosaur.com/docs/api/#operation/Files_GetAttachment
@@ -28,7 +33,7 @@ class Files extends AOperation
      *
      * @param string $id The identifier of the email to be downloaded.
      *
-     * @return string
+     * @return string The raw EML content of the email.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Files_GetEmail Download EML documentation
      * @example https://mailosaur.com/docs/api/#operation/Files_GetEmail
@@ -40,11 +45,14 @@ class Files extends AOperation
 
     /**
      * <strong>Download an email preview</strong>
+     * <p>Downloads a screenshot of your email rendered in a real email client. Simply supply the
+     * unique identifier for the required preview.</p>
      *
-     * @param string $id The identifier of the preview to be downloaded.
+     * @param string $id The identifier of the email preview to be downloaded.
      *
-     * @return string
-     * @throws \Mailosaur\Models\MailosaurException
+     * @return string The preview screenshot image content.
+     * @throws \Mailosaur\Models\MailosaurException With error type `preview_timeout` if the preview is not
+     *                                              generated within the time limit.
      */
     public function getPreview($id)
     {
