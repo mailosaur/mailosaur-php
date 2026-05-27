@@ -33,7 +33,7 @@ class MailosaurClient
     public $messages;
 
     /**
-     * Operations for creating and managing your Mailosaur servers (virtual inboxes).
+     * Operations for creating and managing your Mailosaur inboxes (servers).
      *
      * @var Operations\Servers
      */

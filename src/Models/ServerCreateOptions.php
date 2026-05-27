@@ -5,7 +5,7 @@ namespace Mailosaur\Models;
 
 class ServerCreateOptions
 {
-    /** @var string A name used to identify the server. */
+    /** @var string A name used to identify the inbox (server). */
     public $name;
 
     public function __construct($name = null)

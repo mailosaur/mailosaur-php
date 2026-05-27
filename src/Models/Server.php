@@ -5,16 +5,16 @@ namespace Mailosaur\Models;
 
 class Server
 {
-    /** @var string Unique identifier for the server. Used as username for SMTP/POP3 authentication. */
+    /** @var string Unique identifier for the inbox (server). Used as username for SMTP/POP3 authentication. */
     public $id;
 
-    /** @var string A name used to identify the server. */
+    /** @var string The name of the inbox (server). */
     public $name;
 
-    /** @var array Users (excluding administrators) who have access to the server. */
+    /** @var array Users (excluding administrators) who have access to the inbox (server) when access is restricted. */
     public $users = array();
 
-    /** @var int The number of messages currently in the server. */
+    /** @var int The number of messages currently in the inbox (server). */
     public $messages;
 
     public function __construct(\stdClass $data)
