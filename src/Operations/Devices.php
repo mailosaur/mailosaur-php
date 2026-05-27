@@ -8,13 +8,19 @@ use Mailosaur\Models\DeviceCreateOptions;
 use Mailosaur\Models\DeviceListResult;
 use Mailosaur\Models\OtpResult;
 
+/**
+ * Operations for managing virtual security devices and retrieving their current one-time passwords
+ * (OTPs), used to automate testing of app-based multi-factor authentication. Accessed via
+ * `client->devices`.
+ */
 class Devices extends AOperation
 {
 
     /**
      * <strong>List all devices</strong>
+     * <p>Returns a list of your virtual security devices.</p>
      *
-     * @return DeviceListResult
+     * @return DeviceListResult Your devices.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Devices_List List all devices
      * @example https://mailosaur.com/docs/api/#operation/Devices_List
@@ -32,9 +38,9 @@ class Devices extends AOperation
      * <strong>Create a device</strong>
      * <p>Creates a new virtual security device and returns it.</p>
      *
-     * @param $deviceCreateOptions
+     * @param DeviceCreateOptions $deviceCreateOptions Options used to create a new Mailosaur virtual security device.
      *
-     * @return \Mailosaur\Models\Device
+     * @return \Mailosaur\Models\Device The newly-created device.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Devices_Create Create a device
      * @example https://mailosaur.com/docs/api/#operation/Devices_Create
@@ -62,7 +68,7 @@ class Devices extends AOperation
      *
      * @param string $query Either the unique identifier of the device, or a base32-encoded shared secret.
      *
-     * @return \Mailosaur\Models\OtpResult
+     * @return \Mailosaur\Models\OtpResult The current one-time password.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Devices_Otp Retrieve the current one-time password
      * @example https://mailosaur.com/docs/api/#operation/Devices_Otp
@@ -94,9 +100,11 @@ class Devices extends AOperation
 
     /**
      * <strong>Delete a device</strong>
+     * <p>Permanently deletes a virtual security device. This operation cannot be undone.</p>
      *
-     * @param string $id The identifier of the device to be deleted.
+     * @param string $id The unique identifier of the device to be deleted.
      *
+     * @return void
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Devices_Delete Delete a device
      * @example https://mailosaur.com/docs/api/#operation/Devices_Delete

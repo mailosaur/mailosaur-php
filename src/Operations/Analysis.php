@@ -12,14 +12,19 @@ namespace Mailosaur\Operations;
 use Mailosaur\Models\SpamAnalysisResult;
 use Mailosaur\Models\DeliverabilityReport;
 
+/**
+ * Operations for analyzing the content and deliverability of an email, including SpamAssassin
+ * scoring and per-provider deliverability reports. Accessed via `client->analysis`.
+ */
 class Analysis extends AOperation
 {
     /**
      * <strong>Perform a spam test</strong>
+     * <p>Performs a spam analysis of an email.</p>
      *
-     * @param string $email The identifier of the email to be analyzed.
+     * @param string $email The identifier of the message to be analyzed.
      *
-     * @return SpamAnalysisResult
+     * @return SpamAnalysisResult The spam score and filter results.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/#operation/Analysis_Spam Perform a spam test docs
      * @example https://mailosaur.com/docs/api/#operation/Analysis_Spam
@@ -35,10 +40,11 @@ class Analysis extends AOperation
 
     /**
      * <strong>Perform a deliverability report</strong>
+     * <p>Performs a deliverability report of an email.</p>
      *
-     * @param string $email The identifier of the email to be analyzed.
+     * @param string $email The identifier of the message to be analyzed.
      *
-     * @return DeliverabilityReport
+     * @return DeliverabilityReport The deliverability report for the email.
      * @throws \Mailosaur\Models\MailosaurException
      * @see     https://mailosaur.com/docs/api/analysis Perform a deliverability test docs
      * @example https://mailosaur.com/docs/api/analysis
